@@ -1,13 +1,8 @@
-// @APIVersion 1.0.0
-// @APITitle Pez Inventory Search
-// @APIDescription Search Pez inventory with these APIs
-// @SubApi Type Search [/types]
-// @SubApi Item Search [/items]
 package main
 
-import "github.com/pivotalservices/pezinventory/server"
+import pez "github.com/pivotalservices/pezinventory/service"
 
 func main() {
-	s := server.NewServer()
+	s := pez.NewServer()
 	s.Run()
 }

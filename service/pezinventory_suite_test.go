@@ -1,4 +1,4 @@
-package server_test
+package pezinventory_test
 
 import (
 	. "github.com/onsi/ginkgo"

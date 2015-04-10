@@ -1,9 +1,10 @@
-box: wercker/golang@1.3.2
+box: google/golang
 
 build:
   # The steps that will be executed on build
   steps:
     - setup-go-workspace
+    - wercker/golint
 
     # Get the dependencies
     - script:
@@ -26,21 +27,46 @@ build:
     - script:
         name: go test cover
         code: |
-          ./testCoverage ./... $COVERAGE_WATERMARK
+          (cd $WERCKER_SOURCE_DIR && ./testCoverage ./... $COVERAGE_WATERMARK)
+
+    - script:
+        name: build the server binary
+        code: |
+          godep go build ./main.go
 
     - script:
         name: add repo to artifact
         code: |
           cp -R ./ ${WERCKER_OUTPUT_DIR}
 
-#deploy:
-  #steps: 
-    #- add-ssh-key:
-        #keyname: PCF_GITHUB_KEY
-  
-    #- xchapter7x/flowy-release:
-        #action: "complete-release"
-        #tag_variable_name: "VERSION_TAG"
-        #active: $GITFLOW_ACTIVE
-        #git_name: $GITFLOW_NAME
-        #git_email: $GITFLOW_EMAIL
+deploy:
+  steps: 
+    - script:
+        name: install-packages
+        code: |
+          sudo apt-get install -y ssh wget
+
+    - wercker/add-ssh-key@1.0.2:
+        keyname: PEZ_GITHUB_KEY
+
+    - add-to-known_hosts:
+        hostname: github.com
+        fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+        
+    - xchapter7x/cf-push-zdd:
+        user_name: $CF_USER
+        user_pass: $CF_PASS
+        org: $CF_ORG
+        space: $CF_SPACE
+        api_url: $CF_APIURL
+        app_name: $CF_APPNAME
+        use_manifest: true
+        host: $CF_HOSTNAME
+        domain: $CF_DOMAINNAME
+
+    - xchapter7x/flowy-release:
+        action: "tag-only-release"
+        tag_variable_name: "VERSION_TAG"
+        active: $GITFLOW_ACTIVE
+        git_name: $GITFLOW_NAME
+        git_email: $GITFLOW_EMAIL

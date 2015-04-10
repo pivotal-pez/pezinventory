@@ -1,4 +1,4 @@
-package models
+package pezinventory
 
 type Item struct {
 	Id          string `json:"id"`

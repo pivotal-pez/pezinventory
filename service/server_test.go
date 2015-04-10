@@ -1,4 +1,4 @@
-package server_test
+package pezinventory_test
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/pivotalservices/pezinventory/server"
+	. "github.com/pivotalservices/pezinventory/service"
 )
 
 var _ = Describe("Server", func() {
