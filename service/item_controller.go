@@ -10,18 +10,18 @@ type ItemController struct {
 }
 
 //ListItems - returns a collection of Items
-func (c *ItemController) ListItems(render render.Render) {
-	i := ListItems()
+func (c *ItemController) listItems(render render.Render) {
+	i := listItems()
 	render.JSON(200, successMessage(i))
 }
 
 //GetItem - returns a single Item record
-func (c *ItemController) GetItem(params martini.Params, render render.Render) {
-	i := GetItem(params["id"])
+func (c *ItemController) getItem(params martini.Params, render render.Render) {
+	i := getItem(params["id"])
 	render.JSON(200, successMessage(i))
 }
 
 //GetItemHistory - returns the history for a given Item
-func (c *ItemController) GetItemHistory(params martini.Params, render render.Render) {
+func (c *ItemController) getItemHistory(params martini.Params, render render.Render) {
 	render.JSON(501, errorMessage("Not Implemented"))
 }

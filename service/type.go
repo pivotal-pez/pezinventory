@@ -1,21 +1,22 @@
 package pezinventory
 
+// Type - object for type data
 type Type struct {
-	Id          string `json:"id"`
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Available   bool   `json:"status"`
 }
 
-func ListTypes() (t []Type) {
+func listTypes() (t []Type) {
 	t1 := &Type{
-		Id:          "1",
+		ID:          "1",
 		Name:        "Type 1",
 		Description: "Type 1 Description",
 		Available:   true,
 	}
 	t2 := &Type{
-		Id:          "2",
+		ID:          "2",
 		Name:        "Type 2",
 		Description: "Type 2 Description",
 		Available:   true,
@@ -24,9 +25,9 @@ func ListTypes() (t []Type) {
 	return
 }
 
-func GetType(id string) (t *Type) {
+func getType(id string) (t *Type) {
 	t = &Type{
-		Id:          id,
+		ID:          id,
 		Name:        "Type " + id,
 		Description: "Type " + id + " Description",
 		Available:   true,

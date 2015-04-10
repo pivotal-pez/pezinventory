@@ -22,17 +22,17 @@ func NewServer() Server {
 	//types routes
 	m.Group("/v1/types", func(r martini.Router) {
 		ctrl := &TypeController{}
-		r.Get("", ctrl.ListTypes)
-		r.Get("/:id", ctrl.GetType)
-		r.Get("/:id/items", ctrl.ListTypeItems)
+		r.Get("", ctrl.listTypes)
+		r.Get("/:id", ctrl.getType)
+		r.Get("/:id/items", ctrl.listTypeItems)
 	})
 
 	//items routes
 	m.Group("/v1/items", func(r martini.Router) {
 		ctrl := &ItemController{}
-		r.Get("", ctrl.ListItems)
-		r.Get("/:id", ctrl.GetItem)
-		r.Get("/:id/history", ctrl.GetItemHistory)
+		r.Get("", ctrl.listItems)
+		r.Get("/:id", ctrl.getItem)
+		r.Get("/:id/history", ctrl.getItemHistory)
 	})
 
 	return m

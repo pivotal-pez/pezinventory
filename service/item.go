@@ -1,51 +1,52 @@
 package pezinventory
 
+// Item - object for item data
 type Item struct {
-	Id          string `json:"id"`
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	TypeId      string `json:"type-id"`
+	TypeID      string `json:"type-id"`
 }
 
-func ListItems() (i []Item) {
+func listItems() (i []Item) {
 	i1 := &Item{
-		Id:          "1",
+		ID:          "1",
 		Name:        "Item 1",
 		Description: "Item 1 Description",
-		TypeId:      "abc",
+		TypeID:      "abc",
 	}
 	i2 := &Item{
-		Id:          "2",
+		ID:          "2",
 		Name:        "Item 2",
 		Description: "Item 2 Description",
-		TypeId:      "def",
+		TypeID:      "def",
 	}
 	i = []Item{*i1, *i2}
 	return
 }
 
-func GetItem(id string) (i *Item) {
+func getItem(id string) (i *Item) {
 	i = &Item{
-		Id:          id,
+		ID:          id,
 		Name:        "Item " + id,
 		Description: "Item " + id + " Description",
-		TypeId:      "ghi",
+		TypeID:      "ghi",
 	}
 	return
 }
 
-func ListItemsByType(id string) (i []Item) {
+func listItemsByType(id string) (i []Item) {
 	i1 := &Item{
-		Id:          "4",
+		ID:          "4",
 		Name:        "Item 1",
 		Description: "Item 1 Description",
-		TypeId:      id,
+		TypeID:      id,
 	}
 	i2 := &Item{
-		Id:          "5",
+		ID:          "5",
 		Name:        "Item 2",
 		Description: "Item 2 Description",
-		TypeId:      id,
+		TypeID:      id,
 	}
 	i = []Item{*i1, *i2}
 	return
