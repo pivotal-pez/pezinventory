@@ -10,12 +10,16 @@ import (
 )
 
 var _ = Describe("Server", func() {
-	var server Server
-	var request *http.Request
-	var recorder *httptest.ResponseRecorder
+	var (
+		server    Server
+		request   *http.Request
+		recorder  *httptest.ResponseRecorder
+		addRoutes func()
+	)
 
 	BeforeEach(func() {
-		server = NewServer()
+		server, addRoutes = NewServer()
+		addRoutes()
 		recorder = httptest.NewRecorder()
 	})
 
