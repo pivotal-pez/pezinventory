@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/go-martini/martini"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/pivotalservices/pezinventory/service"
@@ -11,15 +12,14 @@ import (
 
 var _ = Describe("Server", func() {
 	var (
-		server    Server
-		request   *http.Request
-		recorder  *httptest.ResponseRecorder
-		addRoutes func()
+		server   Server
+		request  *http.Request
+		recorder *httptest.ResponseRecorder
 	)
 
 	BeforeEach(func() {
-		server, addRoutes = NewServer()
-		addRoutes()
+		var f martini.Handler = func() {}
+		server = NewServer(f)
 		recorder = httptest.NewRecorder()
 	})
 

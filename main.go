@@ -14,8 +14,6 @@ func main() {
 	targetKeyName := os.Getenv("UPS_PEZVALIDATOR_TARGET")
 	service, _ := appEnv.Services.WithName(validatorServiceName)
 	validationTargetUrl := service.Credentials[targetKeyName]
-	s, addRoutes := pez.NewServer()
-	s.Use(keycheck.NewAPIKeyCheckMiddleware(validationTargetUrl).Handler())
-	addRoutes()
+	s := pez.NewServer(keycheck.NewAPIKeyCheckMiddleware(validationTargetUrl).Handler())
 	s.Run()
 }
