@@ -7,7 +7,7 @@ The inventory capability of Pez.
 ### What things need to be managed as inventory?
 
 #### Assumptions:
-_(Need validation with team)_
+_(Need to validate with team)_
 
 ##### Leases:
 Leases will be the mechanism required by inventory to reserve and release product(s) associated with a user.
