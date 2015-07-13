@@ -27,3 +27,13 @@ coverage.out
 /web/web
 /server/server.coverprofile
 /pezinventory
+/_projects/
+/_steps/
+/_builds/cce520ab-2706-40f2-b90d-c3bec7494ac0/golint-80ea8966-fbc9-422d-b7cd-fc3102fd90df/LICENSE
+/_builds/cce520ab-2706-40f2-b90d-c3bec7494ac0/golint-80ea8966-fbc9-422d-b7cd-fc3102fd90df/README.md
+/_builds/cce520ab-2706-40f2-b90d-c3bec7494ac0/golint-80ea8966-fbc9-422d-b7cd-fc3102fd90df/golint
+/_builds/cce520ab-2706-40f2-b90d-c3bec7494ac0/golint-80ea8966-fbc9-422d-b7cd-fc3102fd90df/run.sh
+/_builds/cce520ab-2706-40f2-b90d-c3bec7494ac0/golint-80ea8966-fbc9-422d-b7cd-fc3102fd90df/wercker-step.yml
+_builds/
+_projects/
+_steps/
