@@ -7,7 +7,7 @@ import (
 	"github.com/go-martini/martini"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/pivotalservices/pezinventory/service"
+	. "github.com/pivotal-pez/pezinventory/service"
 )
 
 var _ = Describe("Server", func() {
