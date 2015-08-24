@@ -33,12 +33,12 @@ X_DOCKER_IP=192.168.59.104
 
 if [ ! -e "$1" ]
 then
-  echo -e "./runlocaldeploy myenv\n\n"
+  echo -e "./runlocaldeploy local_wercker_configs/myenv\n\n"
   echo "Please provide your own environment file, Sample myenv file content:"
   echo "$envfile"
   exit 1
 fi
 
 rm -fR _builds _steps _projects
-wercker --verbose --environment $1 dev --wercker-yml wercker_local_deploy.yml --publish 80
+wercker --verbose --environment $1 dev --wercker-yml local_wercker_configs/wercker_local_deploy.yml --publish 80
 rm -fR _builds _steps _projects

@@ -1,1 +1,3 @@
+rm -fR _builds _steps _projects
 wercker build --git-domain github.com --git-owner pivotal-pez --git-repository pezinventory
+rm -fR _builds _steps _projects

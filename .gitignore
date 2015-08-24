@@ -43,3 +43,4 @@ _steps/
 /vcap_application_template.json
 /vcap_services_template.json
 /myenv
+local_wercker_configs

@@ -43,8 +43,8 @@ dev:
     - script:
          name: set env variables
          code: |
-           export VCAP_SERVICES=`envtemplate -file=vcap_services_template.json`
-           export VCAP_APPLICATION=`envtemplate -file=vcap_application_template.json`
+           export VCAP_SERVICES=`envtemplate -file=local_wercker_configs/vcap_services_template.json`
+           export VCAP_APPLICATION=`envtemplate -file=local_wercker_configs/vcap_application_template.json`
            export UPS_PEZVALIDATOR_NAME=pezvalidator-service
            export UPS_PEZVALIDATOR_TARGET=target-url
 
