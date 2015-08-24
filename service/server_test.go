@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Server", func() {
 	var (
-		server   Server
+		server   *martini.ClassicMartini
 		request  *http.Request
 		recorder *httptest.ResponseRecorder
 	)

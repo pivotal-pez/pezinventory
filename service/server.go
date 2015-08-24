@@ -6,13 +6,13 @@ import (
 )
 
 //Server wraps the Martini server struct
-type Server *martini.ClassicMartini
+//type Server *martini.ClassicMartini
 
 //NewServer configures and returns a Server.
 //TODO: Parameterize DB
-func NewServer(authHandler martini.Handler) (m Server) {
+func NewServer(authHandler martini.Handler) *martini.ClassicMartini {
 
-	m = Server(martini.Classic())
+	m := martini.Classic()
 	m.Use(render.Renderer(render.Options{
 		IndentJSON: true,
 	}))
@@ -33,5 +33,5 @@ func NewServer(authHandler martini.Handler) (m Server) {
 		r.Get("/:id", ctrl.getItem)
 		r.Get("/:id/history", ctrl.getItemHistory)
 	}, authHandler)
-	return
+	return m
 }
