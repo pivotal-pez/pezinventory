@@ -37,3 +37,9 @@ coverage.out
 _builds/
 _projects/
 _steps/
+/wercker_local_deploy.yml
+/wercker_local.yml
+/wercker_local_deploy.yml
+/vcap_application_template.json
+/vcap_services_template.json
+/myenv
