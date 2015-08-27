@@ -1,37 +1,53 @@
 package pezinventory
 
 import (
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
+	"net/http"
+
+	"github.com/codegangsta/negroni"
+	"github.com/gorilla/mux"
+	"github.com/unrolled/render"
 )
 
-//Server wraps the Martini server struct
-//type Server *martini.ClassicMartini
+//Render is a global reference to an initialized renderer
+var Render *render.Render
+
+func initRenderer() {
+	Render = render.New(render.Options{
+		IndentJSON: true,
+	})
+}
 
 //NewServer configures and returns a Server.
-//TODO: Parameterize DB
-func NewServer(authHandler martini.Handler) *martini.ClassicMartini {
+//func NewServer(authHandler negroni.Handler) *negroni.Negroni {
+func NewServer() *negroni.Negroni {
 
-	m := martini.Classic()
-	m.Use(render.Renderer(render.Options{
+	Render = render.New(render.Options{
 		IndentJSON: true,
-	}))
+	})
 
-	//TODO: Database
+	n := negroni.Classic()
+	mx := mux.NewRouter()
 
-	m.Group("/v1/types", func(r martini.Router) {
-		ctrl := &TypeController{}
-		r.Get("", ctrl.listTypes)
-		r.Get("/:id", ctrl.getType)
-		r.Get("/:id/items", ctrl.listTypeItems)
-	}, authHandler)
+	//inventory routes
+	mx.HandleFunc("/inventory", listInventory)
+	n.UseHandler(mx)
 
-	//items routes
-	m.Group("/v1/items", func(r martini.Router) {
-		ctrl := &ItemController{}
-		r.Get("", ctrl.listItems)
-		r.Get("/:id", ctrl.getItem)
-		r.Get("/:id/history", ctrl.getItemHistory)
-	}, authHandler)
-	return m
+	return n
+}
+
+//listInventory - controller function
+func listInventory(w http.ResponseWriter, req *http.Request) {
+	Render.JSON(w, http.StatusOK, map[string]string{"inventory": "list"})
+}
+
+//Inventory - inventory collection wrapper
+type Inventory struct {
+	ID         string                 `json:"_id"`
+	SKU        string                 `json:"sku"`
+	Tier       int                    `json:"tier"`
+	Type       string                 `json:"type"`
+	Size       string                 `json:"size"`
+	Attributes map[string]interface{} `json:"attributes"`
+	ItemStatus string                 `json:"item_status"`
+	LeaseID    string                 `json:"lease_id"`
 }

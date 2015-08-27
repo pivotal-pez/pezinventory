@@ -65,3 +65,34 @@ func (s *APIKeyCheckMiddleware) Handler() martini.Handler {
 	}
 	return handler
 }
+
+//Negroni Extensions -- DJN 24 August 2015
+
+//NewNegroniAPIKeyCheckMiddleware - creates a negroni-compliant middleware
+func NewNegroniAPIKeyCheckMiddleware(url string) *APIKeyCheckMiddleware {
+	keycheck := New(url)
+	middleware := &APIKeyCheckMiddleware{Keycheck: keycheck}
+	return middleware
+}
+
+//ServeHTTP - the negroni middleware handler
+func (s *APIKeyCheckMiddleware) ServeHTTP(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+	if key := req.Header.Get(HeaderKeyName); len(key) == KeyLength {
+
+		if kcResponse, err := s.Keycheck.Check(key); badCheckCall(err, kcResponse) {
+			//log.Println("KeyAuth Failed: ", kcResponse, err)
+			w.WriteHeader(AuthFailStatus)
+			w.Write(AuthFailureResponse)
+
+		} else {
+			log.Println("KeyAuth Success: ", kcResponse)
+		}
+	} else {
+		//log.Println(AuthFailureResponse)
+		w.WriteHeader(AuthFailStatus)
+		w.Write(AuthFailureResponse)
+	}
+
+	// Call the next middleware handler
+	next(w, req)
+}
