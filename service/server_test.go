@@ -35,6 +35,14 @@ var _ = Describe("Server", func() {
 			request, _ = http.NewRequest("GET", "/inventory", nil)
 		})
 
+		// Context("when inventory does not exist", func() {
+		// 	It("returns a status code of 200 and an empty set", func() {
+		// 		server.ServeHTTP(recorder, request)
+		// 		Ω(recorder.Code).To(Equal(200))
+		// 		Ω(recorder.Body).To(ContainSubstring("[]"))
+		// 	})
+		// })
+
 		Context("when inventory exists", func() {
 			It("returns a status code of 200", func() {
 				server.ServeHTTP(recorder, request)
@@ -43,7 +51,7 @@ var _ = Describe("Server", func() {
 
 			It("returns a list of types", func() {
 				server.ServeHTTP(recorder, request)
-				Ω(recorder.Body).To(ContainSubstring("inventory"))
+				Ω(recorder.Body).To(ContainSubstring("2C.small"))
 			})
 		})
 	})
