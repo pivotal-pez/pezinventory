@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/pivotal-pez/pezinventory",
 	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-community/go-cfenv",
@@ -39,17 +42,27 @@
 			"Rev": "2caf8efc93669b6c43e0441cdc6aed17546c96f3"
 		},
 		{
+			"ImportPath": "github.com/onsi/ginkgo",
+			"Comment": "v1.2.0-12-gcd0c926",
+			"Rev": "cd0c92610a042acf1e5aa5a280ab69ecf0ab6d9b"
+		},
+		{
+			"ImportPath": "github.com/onsi/gomega",
+			"Comment": "v1.0-53-g1d25b76",
+			"Rev": "1d25b76be4fe52267f785ebe434ae816489e3bfa"
+		},
+		{
 			"ImportPath": "github.com/oxtoacart/bpool",
 			"Rev": "754d38fccfc6e52083355014b6abc8d626445dfd"
 		},
 		{
-			"ImportPath": "github.com/pivotal-pez/pezauth/keycheck",
-			"Comment": "v0.0.134-2-gfa2f502",
-			"Rev": "fa2f502cde53effd23eb7af44a4f5524765fb086"
-		},
-		{
 			"ImportPath": "github.com/unrolled/render",
 			"Rev": "c442bc30e10d9a5ad49f2837d5e175de0bd0a52a"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2",
+			"Comment": "r2015.06.03-3-g3569c88",
+			"Rev": "3569c88678d88179dcbd68d02ab081cbca3cd4d0"
 		}
 	]
 }

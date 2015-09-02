@@ -6,11 +6,11 @@ applications:
   services:
     - pezvalidator-service
     - inventory-db
-    - lease-db
+
   env:
     UPS_PEZVALIDATOR_NAME: pezvalidator-service
     UPS_PEZVALIDATOR_TARGET: target-url
     INVENTORY_DB_NAME: inventory-db
+    INVENTORY_DB_URI: uri
     INVENTORY_DB_COLLECTION: inventory
-    LEASE_DB_NAME: lease-db
-    LEASE_DB_COLLECTION: leases
+

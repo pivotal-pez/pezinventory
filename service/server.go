@@ -1,92 +1,77 @@
 package pezinventory
 
 import (
-	"log"
-	"net/http"
+	"fmt"
 	"os"
 
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 
+	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
+	"github.com/pivotal-pez/pezinventory/service/integrations"
+
 	"github.com/unrolled/render"
 )
 
-//Render is a global reference to an initialized renderer
-var Render *render.Render
+var formatter *render.Render = nil
 
-func initRenderer() {
-	Render = render.New(render.Options{
-		IndentJSON: true,
-	})
+//Formatter returns the address for a global response formatter
+//realized in the `github.com/unrolled/render` package.
+func Formatter() *render.Render {
+	if formatter == nil {
+		formatter = render.New(render.Options{
+			IndentJSON: true,
+		})
+	}
+	return formatter
 }
 
 //NewServer configures and returns a Server.
-//func NewServer(authHandler negroni.Handler) *negroni.Negroni {
-func NewServer() *negroni.Negroni {
+func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 
-	Render = render.New(render.Options{
-		IndentJSON: true,
-	})
+	//Inventory Collection
+	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
+	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
+	inventoryCollectionName := os.Getenv("INVENTORY_DB_COLLECTION")
+	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
+	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, inventoryCollectionName)
 
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 
 	//inventory routes
-	mx.HandleFunc("/inventory", listInventory)
+	mx.HandleFunc("/v1/inventory", listInventoryHandler(inventoryCollection)).Methods("GET")
 	n.UseHandler(mx)
 
 	return n
 }
 
-//listInventory - controller function
-func listInventory(w http.ResponseWriter, req *http.Request) {
+func getServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.App) (serviceURI string) {
 
-	inventoryDB := os.Getenv("INVENTORY_DB_NAME")
-	inventoryDBCollection := os.Getenv("INVENTORY_DB_COLLECTION")
+	if service, err := appEnv.Services.WithName(serviceName); err == nil {
+		if serviceURI = service.Credentials[serviceURIName].(string); serviceURI == "" {
+			panic(fmt.Sprint("we pulled an empty connection string %s from %v - %v", serviceURI, service, service.Credentials))
+		}
 
-	session, err := mgo.Dial("127.0.0.1")
-	if err != nil {
-		Render.JSON(w, http.StatusInternalServerError, map[string]string{"error": "cannot connect to database"})
-		return
+	} else {
+		panic(fmt.Sprint("Experienced an error trying to grab service binding information:", err.Error()))
 	}
-	defer session.Close()
-
-	// query db
-	c := session.DB(inventoryDB).C(inventoryDBCollection)
-
-	// i := &Inventory{}
-	// i.ID = bson.NewObjectId()
-	// i.SKU = "2C.small"
-	// i.Tier = 2
-	// i.Type = "C"
-	// i.Size = "small"
-
-	// err = c.Insert(i)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	result := Inventory{}
-	err = c.Find(bson.M{"sku": "2C.small"}).One(&result)
-	if err != nil {
-		Render.JSON(w, http.StatusOK, map[string]string{"inventory": "[]"})
-		log.Fatal(err)
-	}
-
-	// return results
-	Render.JSON(w, http.StatusOK, &result)
+	return
 }
 
-//Inventory - inventory collection wrapper
-type Inventory struct {
-	ID         bson.ObjectId          `json:"_id"`
-	SKU        string                 `json:"sku"`
-	Tier       int                    `json:"tier"`
-	Type       string                 `json:"type"`
-	Size       string                 `json:"size"`
-	Attributes map[string]interface{} `json:"attributes"`
-	ItemStatus string                 `json:"item_status"`
-	LeaseID    string                 `json:"lease_id"`
+func SetupDB(dialer integrations.CollectionDialer, URI string, collectionName string) (collection integrations.Collection) {
+	var (
+		err      error
+		dialInfo *mgo.DialInfo
+	)
+
+	if dialInfo, err = mgo.ParseURL(URI); err != nil || dialInfo.Database == "" {
+		panic(fmt.Sprintf("can not parse given URI %s due to error: %s", URI, err.Error()))
+	}
+
+	if collection, err = dialer(URI, dialInfo.Database, collectionName); err != nil {
+		panic(fmt.Sprintf("can not dial connection due to error: %s URI:%s col:%s db:%s", err.Error(), URI, collectionName, dialInfo.Database))
+	}
+	return
 }
