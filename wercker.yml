@@ -66,6 +66,7 @@ deploy:
         org: $CF_ORG
         space: $CF_SPACE
         api_url: $CF_APIURL
+        app_name: $CF_APPNAME
         use_manifest: true
         manifest: $CF_MANIFEST
 
