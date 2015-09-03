@@ -6,9 +6,9 @@ services:
   - pezvalidator-service
   - inventory-db
 
-  env:
-    UPS_PEZVALIDATOR_NAME: pezvalidator-service
-    UPS_PEZVALIDATOR_TARGET: target-url
-    INVENTORY_DB_NAME: inventory-db
-    INVENTORY_DB_URI: uri
+env:
+  UPS_PEZVALIDATOR_NAME: pezvalidator-service
+  UPS_PEZVALIDATOR_TARGET: target-url
+  INVENTORY_DB_NAME: inventory-db
+  INVENTORY_DB_URI: uri
 
