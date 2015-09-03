@@ -12,5 +12,4 @@ applications:
     UPS_PEZVALIDATOR_TARGET: target-url
     INVENTORY_DB_NAME: inventory-db
     INVENTORY_DB_URI: uri
-    INVENTORY_DB_COLLECTION: inventory
 

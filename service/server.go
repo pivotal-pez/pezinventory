@@ -33,7 +33,6 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	//Inventory Collection
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
-	inventoryCollectionName := os.Getenv("INVENTORY_DB_COLLECTION")
 	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
 	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, inventoryCollectionName)
 
@@ -41,7 +40,8 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	mx := mux.NewRouter()
 
 	//inventory routes
-	mx.HandleFunc("/v1/inventory", listInventoryHandler(inventoryCollection)).Methods("GET")
+	mx.HandleFunc("/v1/inventory", listInventoryItemsHandler(inventoryCollection)).Methods("GET")
+	mx.HandleFunc("/v1/inventory", insertInventoryItemHandler(inventoryCollection)).Methods("POST")
 	n.UseHandler(mx)
 
 	return n
@@ -51,7 +51,7 @@ func getServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.
 
 	if service, err := appEnv.Services.WithName(serviceName); err == nil {
 		if serviceURI = service.Credentials[serviceURIName].(string); serviceURI == "" {
-			panic(fmt.Sprint("we pulled an empty connection string %s from %v - %v", serviceURI, service, service.Credentials))
+			panic(fmt.Sprintf("we pulled an empty connection string %s from %v - %v", serviceURI, service, service.Credentials))
 		}
 
 	} else {

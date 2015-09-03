@@ -1,5 +1,6 @@
 box: google/golang
-
+services:
+    - mongo
 dev:
   # The steps that will be executed on build
   steps:
@@ -21,11 +22,26 @@ dev:
           go get -u github.com/datianshi/envtemplate
           export PATH=$WERCKER_SOURCE_DIR/bin:$PATH
 
+    - script:
+         name: set env variables
+         code: |
+           export VCAP_SERVICES=`envtemplate -file=local_wercker_configs/vcap_services_template.json`
+           export VCAP_APPLICATION=`envtemplate -file=local_wercker_configs/vcap_application_template.json`
+           export INVENTORY_DB_NAME=inventory-db
+           export INVENTORY_DB_URI=uri
+           export UPS_PEZVALIDATOR_NAME=pezvalidator-service
+           export UPS_PEZVALIDATOR_TARGET=target-url
+
     # Test the project
     - script:
-        name: go test
+        name: go unit tests
         code: |
           godep go test ./... -v -race
+
+    - script:
+        name: go integration tests
+        code: |
+          godep go test ./service/_tests -v -race
 
     # Setting the coverage watermark low.
     # This should be raised as we gain more coverage...
@@ -39,14 +55,6 @@ dev:
         name: build the server binary
         code: |
           godep go build ./main.go
-
-    - script:
-         name: set env variables
-         code: |
-           export VCAP_SERVICES=`envtemplate -file=local_wercker_configs/vcap_services_template.json`
-           export VCAP_APPLICATION=`envtemplate -file=local_wercker_configs/vcap_application_template.json`
-           export UPS_PEZVALIDATOR_NAME=pezvalidator-service
-           export UPS_PEZVALIDATOR_TARGET=target-url
 
     - internal/watch:
         code: >

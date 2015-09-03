@@ -7,6 +7,7 @@ type (
 	Collection interface {
 		Wake()
 		Close()
+		Find(selector interface{}, result interface{}) (err error)
 		FindOne(id string, result interface{}) (err error)
 		UpsertID(selector interface{}, update interface{}) (info *mgo.ChangeInfo, err error)
 		FindAndModify(selector interface{}, update interface{}, target interface{}) (info *mgo.ChangeInfo, err error)

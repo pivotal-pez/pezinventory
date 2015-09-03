@@ -28,6 +28,7 @@ func successMessage(data interface{}) (rsp ResponseMessage) {
 	return
 }
 
+//FIXME(dnem) pass error object and parse internally
 func errorMessage(message string) (rsp ResponseMessage) {
 	rsp = ResponseMessage{
 		Status:  errorStatus,

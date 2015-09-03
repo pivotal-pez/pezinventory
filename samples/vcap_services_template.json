@@ -1,4 +1,18 @@
 {
+  "p-mongodb": [
+   {
+    "credentials": {
+     "uri": "mongodb://{{.MONGO_PORT_27017_TCP_ADDR}}:{{.MONGO_PORT_27017_TCP_PORT}}/59501f9b-5528-421b-84e9-93f9dc6f1080"
+    },
+    "label": "p-mongodb",
+    "name": "inventory-db",
+    "plan": "development",
+    "tags": [
+     "pivotal",
+     "mongodb"
+    ]
+   }
+  ],
   "user-provided": [
     {
       "name": "pezvalidator-service",
@@ -11,4 +25,3 @@
     }
   ]
 }
-
