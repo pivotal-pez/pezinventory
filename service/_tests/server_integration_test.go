@@ -45,14 +45,3 @@ var _ = Describe("Server Integration Test", func() {
 		// })
 	})
 })
-
-//seed inventory collection
-// i := &InventoryItem{}
-// i.SKU = "2C.small"
-// i.Tier = 2
-// i.OfferingType = "C"
-// i.Size = "small"
-// i.Status = "available"
-// b, _ := json.Marshal(i)
-// reader := strings.NewReader(string(b))
-// _, _ = http.NewRequest("POST", "/v1/inventory", reader)

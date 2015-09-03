@@ -34,14 +34,14 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
 	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
-	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, inventoryCollectionName)
+	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
 
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 
 	//inventory routes
-	mx.HandleFunc("/v1/inventory", listInventoryItemsHandler(inventoryCollection)).Methods("GET")
-	mx.HandleFunc("/v1/inventory", insertInventoryItemHandler(inventoryCollection)).Methods("POST")
+	mx.HandleFunc("/v1/inventory", ListInventoryItemsHandler(inventoryCollection)).Methods("GET")
+	mx.HandleFunc("/v1/inventory", InsertInventoryItemHandler(inventoryCollection)).Methods("POST")
 	n.UseHandler(mx)
 
 	return n

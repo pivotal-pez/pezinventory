@@ -22,7 +22,7 @@ type InventoryItem struct {
 	LeaseID      string                 `json:"lease_id"`
 }
 
-func listInventoryItemsHandler(collection integrations.Collection) http.HandlerFunc {
+func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
@@ -39,7 +39,7 @@ func listInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 	}
 }
 
-func insertInventoryItemHandler(collection integrations.Collection) http.HandlerFunc {
+func InsertInventoryItemHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var i InventoryItem
 		decoder := json.NewDecoder(req.Body)

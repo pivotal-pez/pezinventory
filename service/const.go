@@ -1,5 +1,5 @@
 package pezinventory
 
 const (
-	inventoryCollectionName = "inventory"
+	InventoryCollectionName = "inventory"
 )
