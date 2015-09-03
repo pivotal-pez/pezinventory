@@ -30,7 +30,6 @@ func Formatter() *render.Render {
 //NewServer configures and returns a Server.
 func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 
-	//Inventory Collection
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
 	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
@@ -39,7 +38,6 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 
-	//inventory routes
 	mx.HandleFunc("/v1/inventory", ListInventoryItemsHandler(inventoryCollection)).Methods("GET")
 	mx.HandleFunc("/v1/inventory", InsertInventoryItemHandler(inventoryCollection)).Methods("POST")
 	n.UseHandler(mx)

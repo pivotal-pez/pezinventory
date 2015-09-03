@@ -1,0 +1,4 @@
+---
+host: inventorydev
+domain: cfapps.core.pez.pivotal.io
+instances: 2

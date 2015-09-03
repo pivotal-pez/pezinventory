@@ -1,7 +1,6 @@
 package pezinventory_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -41,11 +40,6 @@ var _ = Describe("listInventoryItemsController", func() {
 				InventoryCollectionName)
 		)
 
-		// BeforeEach(func() {
-		// 	//handler := ListInventoryItemsHandler(inventoryCollection).(func(w http.ResponseWriter, req *http.Request))
-
-		// })
-
 		It("should return true", func() {
 			server := httptest.NewServer(http.HandlerFunc(http.HandlerFunc(ListInventoryItemsHandler(inventoryCollection))))
 			defer server.Close()
@@ -61,7 +55,6 @@ var _ = Describe("listInventoryItemsController", func() {
 				log.Fatal(err)
 			}
 
-			fmt.Print(string(payload))
 			Ω(payload).To(ContainSubstring("2C.small"))
 		})
 	})

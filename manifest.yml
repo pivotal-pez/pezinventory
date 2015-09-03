@@ -1,11 +1,10 @@
 ---
-applications:
-- name: pezinventory
-  buildpack: http://github.com/ryandotsmith/null-buildpack.git
-  command: ./main
-  services:
-    - pezvalidator-service
-    - inventory-db
+name: pezinventory
+buildpack: http://github.com/ryandotsmith/null-buildpack.git
+command: ./main
+services:
+  - pezvalidator-service
+  - inventory-db
 
   env:
     UPS_PEZVALIDATOR_NAME: pezvalidator-service
