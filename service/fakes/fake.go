@@ -1,6 +1,8 @@
 package fakes
 
 import (
+	"encoding/json"
+
 	"github.com/pivotal-pez/pezinventory/service"
 	"github.com/pivotal-pez/pezinventory/service/integrations"
 	"gopkg.in/mgo.v2"
@@ -8,9 +10,14 @@ import (
 
 //FakeNewCollectionDialer -
 func FakeNewCollectionDialer(c []pezinventory.InventoryItem) func(url, dbname, collectionname string) (col integrations.Collection, err error) {
+	b, err := json.Marshal(c)
+	if err != nil {
+		panic("shit is broken")
+	}
+
 	return func(url, dbname, collectionname string) (col integrations.Collection, err error) {
 		col = &FakeCollection{
-			Data: c,
+			Data: b,
 		}
 		return
 	}
@@ -19,7 +26,7 @@ func FakeNewCollectionDialer(c []pezinventory.InventoryItem) func(url, dbname, c
 //FakeCollection -
 type FakeCollection struct {
 	mgo.Collection
-	Data  []pezinventory.InventoryItem
+	Data  []byte
 	Error error
 }
 
@@ -35,8 +42,7 @@ func (s *FakeCollection) Wake() {
 
 //Find -- finds all records matching given selector
 func (s *FakeCollection) Find(selector interface{}, result interface{}) (err error) {
-	err = s.Error
-	*(result.(*[]pezinventory.InventoryItem)) = s.Data
+	err = json.Unmarshal(s.Data, result)
 	return
 }
 
@@ -52,7 +58,6 @@ func (s *FakeCollection) UpsertID(id interface{}, result interface{}) (changInfo
 
 //FindOne -
 func (s *FakeCollection) FindOne(id string, result interface{}) (err error) {
-	err = s.Error
-	*(result.(*pezinventory.InventoryItem)) = s.Data[0]
+	err = json.Unmarshal(s.Data, result)
 	return
 }

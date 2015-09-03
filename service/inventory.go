@@ -12,6 +12,19 @@ import (
 
 //InventoryItem - inventory collection wrapper
 type InventoryItem struct {
+	ID                bson.ObjectId          `bson:"_id,omitempty" json:"id"`
+	SKU               string                 `json:"sku"`
+	Tier              int                    `json:"tier"`
+	OfferingType      string                 `json:"offeringType"`
+	Size              string                 `json:"size"`
+	Attributes        map[string]interface{} `json:"attributes"`
+	PrivateAttributes map[string]interface{} `json:"private_attributes,omitempty"`
+	Status            string                 `json:"status"`
+	LeaseID           string                 `json:"lease_id"`
+}
+
+//RedactedInventoryItem - inventory collection wrapper without private attributes
+type RedactedInventoryItem struct {
 	ID           bson.ObjectId          `bson:"_id,omitempty" json:"id"`
 	SKU          string                 `json:"sku"`
 	Tier         int                    `json:"tier"`
@@ -22,13 +35,14 @@ type InventoryItem struct {
 	LeaseID      string                 `json:"lease_id"`
 }
 
+//ListInventoryItemsHandler -
+// currently selects using a nil selector
 func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		//FIXME(dnem) short-circuited to return all; update to ingest request params
 		selector := bson.M{}
-		items := make([]InventoryItem, 0)
+		items := make([]RedactedInventoryItem, 0)
 
 		if err := collection.Find(selector, &items); err == nil {
 			Formatter().JSON(w, http.StatusOK, successMessage(&items))

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"gopkg.in/mgo.v2/bson"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/pivotal-pez/pezinventory/service"
@@ -18,20 +20,22 @@ var _ = Describe("listInventoryItemsController", func() {
 			fakeURI       = "mongodb://guid:quid@addr:port/guid"
 			fakeInventory = []InventoryItem{
 				InventoryItem{
-					ID:           "abcdef1",
-					SKU:          "2C.small",
-					Tier:         2,
-					OfferingType: "C",
-					Size:         "small",
-					Status:       "available",
+					ID:                bson.NewObjectId(),
+					SKU:               "2C.small",
+					Tier:              2,
+					OfferingType:      "C",
+					Size:              "small",
+					Status:            "available",
+					PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 				},
 				InventoryItem{
-					ID:           "abcdef2",
-					SKU:          "2C.small",
-					Tier:         2,
-					OfferingType: "C",
-					Size:         "small",
-					Status:       "available",
+					ID:                bson.NewObjectId(),
+					SKU:               "2C.small",
+					Tier:              2,
+					OfferingType:      "C",
+					Size:              "small",
+					Status:            "available",
+					PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 				},
 			}
 			inventoryCollection = SetupDB(
@@ -56,6 +60,8 @@ var _ = Describe("listInventoryItemsController", func() {
 			}
 
 			Ω(payload).To(ContainSubstring("2C.small"))
+			Ω(payload).ShouldNot(ContainElement("private_atrributes"))
+
 		})
 	})
 })
