@@ -14,7 +14,7 @@ import (
 //Lease wraps the leases collection.
 type Lease struct {
 	ID                bson.ObjectId          `bson:"_id,omitempty" json:"id"`
-	InventoryItemID   bson.ObjectId          `bson:"inventory_item_id" json:"inventory_item_id"`
+	InventoryItemID   bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id"`
 	User              string                 `json:"user"`
 	Duration          string                 `json:"duration"`
 	StartDate         string                 `json:"start_date"`
@@ -27,7 +27,7 @@ type Lease struct {
 //RedactedLease wraps the leases collection omitting private attributes.
 type RedactedLease struct {
 	ID              bson.ObjectId          `bson:"_id,omitempty" json:"id"`
-	InventoryItemID bson.ObjectId          `bson:"inventory_item_id" json:"inventory_item_id"`
+	InventoryItemID bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id"`
 	User            string                 `json:"user"`
 	Duration        string                 `json:"duration"`
 	StartDate       string                 `json:"start_date"`
