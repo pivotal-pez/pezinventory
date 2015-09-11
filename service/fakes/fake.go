@@ -2,14 +2,14 @@ package fakes
 
 import (
 	"encoding/json"
+	"strconv"
 
-	"github.com/pivotal-pez/pezinventory/service"
 	"github.com/pivotal-pez/pezinventory/service/integrations"
 	"gopkg.in/mgo.v2"
 )
 
 //FakeNewCollectionDialer -
-func FakeNewCollectionDialer(c []pezinventory.InventoryItem) func(url, dbname, collectionname string) (col integrations.Collection, err error) {
+func FakeNewCollectionDialer(c interface{}) func(url, dbname, collectionname string) (col integrations.Collection, err error) {
 	b, err := json.Marshal(c)
 	if err != nil {
 		panic("shit is broken")
@@ -58,6 +58,19 @@ func (s *FakeCollection) UpsertID(id interface{}, result interface{}) (changInfo
 
 //FindOne -
 func (s *FakeCollection) FindOne(id string, result interface{}) (err error) {
-	err = json.Unmarshal(s.Data, result)
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		return
+	}
+	col := make([]interface{}, 0)
+	err = json.Unmarshal(s.Data, &col)
+	if err != nil {
+		return
+	}
+	b, err := json.Marshal(col[i])
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(b, result)
 	return
 }

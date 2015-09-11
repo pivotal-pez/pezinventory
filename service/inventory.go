@@ -10,12 +10,12 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//InventoryItem - inventory collection wrapper
+//InventoryItem wraps the inventory collection.
 type InventoryItem struct {
 	ID                bson.ObjectId          `bson:"_id,omitempty" json:"id"`
 	SKU               string                 `json:"sku"`
 	Tier              int                    `json:"tier"`
-	OfferingType      string                 `json:"offeringType"`
+	OfferingType      string                 `json:"offering_type"`
 	Size              string                 `json:"size"`
 	Attributes        map[string]interface{} `json:"attributes"`
 	PrivateAttributes map[string]interface{} `json:"private_attributes,omitempty"`
@@ -23,12 +23,12 @@ type InventoryItem struct {
 	LeaseID           string                 `json:"lease_id"`
 }
 
-//RedactedInventoryItem - inventory collection wrapper without private attributes
+//RedactedInventoryItem wraps the inventory collection omitting private attributes.
 type RedactedInventoryItem struct {
 	ID           bson.ObjectId          `bson:"_id,omitempty" json:"id"`
 	SKU          string                 `json:"sku"`
 	Tier         int                    `json:"tier"`
-	OfferingType string                 `json:"offeringType"`
+	OfferingType string                 `json:"offering_type"`
 	Size         string                 `json:"size"`
 	Attributes   map[string]interface{} `json:"attributes"`
 	Status       string                 `json:"status"`
@@ -53,6 +53,7 @@ func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 	}
 }
 
+//InsertInventoryItemHandler -
 func InsertInventoryItemHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var i InventoryItem

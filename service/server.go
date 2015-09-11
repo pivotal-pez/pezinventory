@@ -34,12 +34,19 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
 	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
 	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
+	leaseServiceName := os.Getenv("LEASE_DB_NAME")
+	leaseServiceURIName := os.Getenv("LEASE_DB_URI")
+	leaseServiceURI := getServiceBinding(leaseServiceName, leaseServiceURIName, appEnv)
+	leaseCollection := SetupDB(integrations.NewCollectionDialer, leaseServiceURI, LeaseCollectionName)
 
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 
 	mx.HandleFunc("/v1/inventory", ListInventoryItemsHandler(inventoryCollection)).Methods("GET")
 	mx.HandleFunc("/v1/inventory", InsertInventoryItemHandler(inventoryCollection)).Methods("POST")
+	mx.HandleFunc("/v1/lease/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
+	mx.HandleFunc("/v1/lease", InsertLeaseRecordHandler(leaseCollection)).Methods("POST")
+
 	n.UseHandler(mx)
 
 	return n
