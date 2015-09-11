@@ -41,8 +41,8 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 
 	mx.HandleFunc("/v1/inventory", ListInventoryItemsHandler(inventoryCollection)).Methods("GET")
 	mx.HandleFunc("/v1/inventory", InsertInventoryItemHandler(inventoryCollection)).Methods("POST")
-	mx.HandleFunc("/v1/lease/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
-	mx.HandleFunc("/v1/lease", InsertLeaseRecordHandler(leaseCollection)).Methods("POST")
+	mx.HandleFunc("/v1/leases/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
+	mx.HandleFunc("/v1/leases", InsertLeaseRecordHandler(leaseCollection)).Methods("POST")
 
 	n.UseHandler(mx)
 

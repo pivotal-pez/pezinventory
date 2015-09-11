@@ -76,12 +76,12 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 		It("should return lease record 1", func() {
 
 			mx := mux.NewRouter()
-			mx.HandleFunc("/v1/lease/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
+			mx.HandleFunc("/v1/leases/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
 
 			server := httptest.NewServer(mx)
 			defer server.Close()
 
-			leaseURL := server.URL + "/v1/lease/0"
+			leaseURL := server.URL + "/v1/leases/0"
 
 			res, err := http.Get(leaseURL)
 			if err != nil {
@@ -103,12 +103,12 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 		It("should return lease record 2", func() {
 
 			mx := mux.NewRouter()
-			mx.HandleFunc("/v1/lease/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
+			mx.HandleFunc("/v1/leases/{id}", FindLeaseByIDHandler(leaseCollection)).Methods("GET")
 
 			server := httptest.NewServer(mx)
 			defer server.Close()
 
-			leaseURL := server.URL + "/v1/lease/1"
+			leaseURL := server.URL + "/v1/leases/1"
 
 			res, err := http.Get(leaseURL)
 			if err != nil {
