@@ -14,6 +14,7 @@ import (
 //Lease wraps the leases collection.
 type Lease struct {
 	ID                bson.ObjectId          `bson:"_id,omitempty" json:"id"`
+	InventoryItemID   bson.ObjectId          `bson:"inventory_item_id" json:"inventory_item_id"`
 	User              string                 `json:"user"`
 	Duration          string                 `json:"duration"`
 	StartDate         string                 `json:"start_date"`
@@ -25,13 +26,14 @@ type Lease struct {
 
 //RedactedLease wraps the leases collection omitting private attributes.
 type RedactedLease struct {
-	ID         bson.ObjectId          `bson:"_id,omitempty" json:"id"`
-	User       string                 `json:"user"`
-	Duration   string                 `json:"duration"`
-	StartDate  string                 `json:"start_date"`
-	EndDate    string                 `json:"end_date"`
-	Status     string                 `json:"status"`
-	Attributes map[string]interface{} `json:"attributes"`
+	ID              bson.ObjectId          `bson:"_id,omitempty" json:"id"`
+	InventoryItemID bson.ObjectId          `bson:"inventory_item_id" json:"inventory_item_id"`
+	User            string                 `json:"user"`
+	Duration        string                 `json:"duration"`
+	StartDate       string                 `json:"start_date"`
+	EndDate         string                 `json:"end_date"`
+	Status          string                 `json:"status"`
+	Attributes      map[string]interface{} `json:"attributes"`
 }
 
 //FindLeaseByIDHandler will return a redacted lease record for the given ID.

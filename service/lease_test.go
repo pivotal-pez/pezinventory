@@ -23,6 +23,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 		fakeLeaseCollection = []Lease{
 			Lease{
 				ID:                id1,
+				InventoryItemID:   bson.NewObjectId(),
 				User:              "testuser-1",
 				Duration:          "14 days",
 				StartDate:         time.Now().AddDate(0, 0, -2).String(),
@@ -33,6 +34,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 			},
 			Lease{
 				ID:                id2,
+				InventoryItemID:   bson.NewObjectId(),
 				User:              "testuser-2",
 				Duration:          "28 days",
 				StartDate:         time.Now().AddDate(0, 0, -14).String(),
