@@ -62,7 +62,6 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 		err := decoder.Decode(&i)
 		if err != nil {
 			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
-			return
 		} else {
 			i.ID = bson.NewObjectId()
 		}

@@ -34,7 +34,7 @@ type RedactedLease struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-//FindLeaseByIDHandler -
+//FindLeaseByIDHandler will return a redacted lease record for the given ID.
 func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
@@ -55,7 +55,7 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 	}
 }
 
-//InserLeaseRecordHandler -
+//InsertLeaseRecordHandler performs an upsert on a new/existing lease record.
 func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var obj Lease
@@ -64,7 +64,6 @@ func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFu
 		err := decoder.Decode(&obj)
 		if err != nil {
 			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
-			return
 		} else {
 			obj.ID = bson.NewObjectId()
 		}

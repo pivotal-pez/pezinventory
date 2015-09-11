@@ -62,7 +62,7 @@ func (s *FakeCollection) FindOne(id string, result interface{}) (err error) {
 	if err != nil {
 		return
 	}
-	col := make([]interface{}, 0)
+	var col []interface{}
 	err = json.Unmarshal(s.Data, &col)
 	if err != nil {
 		return

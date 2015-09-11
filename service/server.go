@@ -14,7 +14,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-var formatter *render.Render = nil
+var formatter *render.Render
 
 //Formatter returns the address for a global response formatter
 //realized in the `github.com/unrolled/render` package.
@@ -62,6 +62,8 @@ func getServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.
 	return
 }
 
+//SetupDB connects to the specified database and returns an integrations.Collection
+//object for the specified collection.
 func SetupDB(dialer integrations.CollectionDialer, URI string, collectionName string) (collection integrations.Collection) {
 	var (
 		err      error
