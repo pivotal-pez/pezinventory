@@ -29,8 +29,6 @@ dev:
            export VCAP_APPLICATION=`envtemplate -file=local_wercker_configs/vcap_application_template.json`
            export INVENTORY_DB_NAME=inventory-db
            export INVENTORY_DB_URI=uri
-           export UPS_PEZVALIDATOR_NAME=pezvalidator-service
-           export UPS_PEZVALIDATOR_TARGET=target-url
 
     # Test the project
     - script:

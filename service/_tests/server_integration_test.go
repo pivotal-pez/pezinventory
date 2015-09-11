@@ -36,13 +36,13 @@ const (
 	VcapApplicationFormatter = `{
 				"limits":{"mem":1024,"disk":1024,"fds":16384},
 				"application_version":"56637561-e847-4023-87fa-1e476cb0b7e3",
-				"application_name":"dispenserdev",
-				"application_uris":["dispenserdev.cfapps.pez.pivotal.io","dispenserdev.pezapp.io"],
+				"application_name":"inventorydev",
+				"application_uris":["inventorydev.cfapps.core.pez.pivotal.io"],
 				"version":"56637561-e847-4023-87fa-1e476cb0b7e3",
-				"name":"dispenserdev",
+				"name":"inventorydev",
 				"space_name":"pez-dev",
 				"space_id":"ea88ed9e-91f1-4763-8eef-54fe38acf603",
-				"uris":["dispenserdev.cfapps.pez.pivotal.io","dispenserdev.pezapp.io"],
+				"uris":["inventorydev.cfapps.core.pez.pivotal.io"],
 				"users":null
 			}`
 )

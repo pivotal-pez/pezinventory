@@ -50,7 +50,7 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 			Formatter().JSON(w, http.StatusOK, successMessage(lease))
 		} else {
 			log.Println("lease lookup failed")
-			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
 		}
 	}
 }
