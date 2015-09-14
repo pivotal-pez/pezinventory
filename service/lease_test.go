@@ -67,7 +67,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 			}
 
 			Ω(payload).To(ContainSubstring("error"))
-			Ω(payload).Should(ContainSubstring("LeaseID must be specified"))
+			Ω(payload).Should(ContainSubstring("lease id must be specified"))
 			Ω(payload).ShouldNot(ContainElement("data"))
 		})
 	})

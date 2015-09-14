@@ -20,7 +20,7 @@ type InventoryItem struct {
 	Attributes        map[string]interface{} `json:"attributes"`
 	PrivateAttributes map[string]interface{} `json:"private_attributes,omitempty"`
 	Status            string                 `json:"status"`
-	LeaseID           string                 `json:"lease_id"`
+	LeaseID           bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id"`
 }
 
 //RedactedInventoryItem wraps the inventory collection omitting private attributes.
@@ -32,7 +32,7 @@ type RedactedInventoryItem struct {
 	Size         string                 `json:"size"`
 	Attributes   map[string]interface{} `json:"attributes"`
 	Status       string                 `json:"status"`
-	LeaseID      string                 `json:"lease_id"`
+	LeaseID      bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id"`
 }
 
 //ListInventoryItemsHandler -

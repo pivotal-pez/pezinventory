@@ -43,7 +43,7 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 
 		id := mux.Vars(req)["id"]
 		if id == "" {
-			Formatter().JSON(w, http.StatusBadRequest, errorMessage("LeaseID must be specified"))
+			Formatter().JSON(w, http.StatusBadRequest, errorMessage("lease id must be specified"))
 			return
 		}
 
@@ -57,7 +57,74 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 	}
 }
 
+//LeaseInventoryItemHandler creates a new lease record against an available InventoryItem
+//and calls dispenser to provision that InventoryItem to the requestor.
+//NOTE: call to dispenser not implemented
+func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Collection) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		var leaseObj Lease
+		var inventoryObj RedactedInventoryItem
+		decoder := json.NewDecoder(req.Body)
+
+		err := decoder.Decode(&leaseObj)
+		if err != nil {
+			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
+			return
+		}
+
+		if leaseObj.InventoryItemID == "" {
+			Formatter().JSON(w, http.StatusBadRequest, errorMessage("inventory_item_id must be specified"))
+			return
+		}
+
+		isel := bson.M{
+			"_id":    leaseObj.InventoryItemID,
+			"status": InventoryItemStatusAvailable,
+		}
+
+		iupd := bson.M{
+			"status": InventoryItemStatusReserving,
+		}
+
+		ic.Wake()
+		_, err = ic.FindAndModify(isel, iupd, &inventoryObj)
+		if err != nil {
+			Formatter().JSON(w, http.StatusNotFound, errorMessage(ErrInventoryNotAvailable.Error()))
+			return
+		}
+
+		lc.Wake()
+		leaseObj.ID = bson.NewObjectId()
+		_, err = lc.UpsertID(leaseObj.ID, leaseObj)
+		if err != nil {
+			//TODO(dnem) return inventory back to original state
+			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			return
+		}
+
+		isel2 := bson.M{
+			"_id":    inventoryObj.ID,
+			"status": InventoryItemStatusReserving,
+		}
+
+		iupd2 := bson.M{
+			"status":   InventoryItemStatusLeased,
+			"lease_id": leaseObj.ID,
+		}
+
+		ic.Wake()
+		_, err = ic.FindAndModify(isel2, iupd2, &inventoryObj)
+		if err != nil {
+			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			return
+		}
+
+		Formatter().JSON(w, http.StatusOK, leaseObj)
+	}
+}
+
 //InsertLeaseRecordHandler performs an upsert on a new/existing lease record.
+//FIXME(dnem) This should be modified to handle lease updates via  PATCH /v1/leases
 func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var obj Lease
@@ -66,7 +133,10 @@ func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFu
 		err := decoder.Decode(&obj)
 		if err != nil {
 			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
-		} else {
+			return
+		}
+
+		if obj.ID == "" {
 			obj.ID = bson.NewObjectId()
 		}
 
@@ -77,7 +147,6 @@ func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFu
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
 		} else {
 			log.Println(info)
-			//FIXME(dnem) consider returning ID rather than mgo.ChangeInfo
 			Formatter().JSON(w, http.StatusOK, successMessage(info))
 		}
 	}
