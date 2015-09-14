@@ -54,6 +54,7 @@ func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 }
 
 //InsertInventoryItemHandler -
+//FIXME(dnem) consider returning ID rather than mgo.ChangeInfo
 func InsertInventoryItemHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var i InventoryItem
@@ -73,8 +74,67 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
 		} else {
 			log.Println(info)
-			//FIXME(dnem) consider returning ID rather than mgo.ChangeInfo
 			Formatter().JSON(w, http.StatusOK, successMessage(info))
 		}
 	}
+}
+
+//InventoryItemReservingStatus updates the status from "available" to "reserving".
+func InventoryItemReservingStatus(id bson.ObjectId, collection integrations.Collection) error {
+	var obj RedactedInventoryItem
+
+	sel := bson.M{
+		"_id":    id,
+		"status": InventoryItemStatusAvailable,
+	}
+
+	update := bson.M{
+		"status": InventoryItemStatusReserving,
+	}
+
+	collection.Wake()
+	_, err := collection.FindAndModify(sel, update, &obj)
+	if err != nil {
+		err = ErrInventoryNotAvailable
+	}
+	return err
+}
+
+//InventoryItemAvailableStatus reverts the status from "reserving" to "available" in the case
+//where a lease operation is unsuccessful.
+func InventoryItemAvailableStatus(id bson.ObjectId, collection integrations.Collection) error {
+	var obj RedactedInventoryItem
+
+	sel := bson.M{
+		"_id":    id,
+		"status": InventoryItemStatusReserving,
+	}
+
+	update := bson.M{
+		"status": InventoryItemStatusAvailable,
+	}
+
+	collection.Wake()
+	_, err := collection.FindAndModify(sel, update, &obj)
+	return err
+}
+
+//InventoryItemLeasedStatus updates the status from "reserving" to "leased" and supplies
+//the lease_id value.
+func InventoryItemLeasedStatus(id bson.ObjectId, leaseId bson.ObjectId, collection integrations.Collection) error {
+	var obj RedactedInventoryItem
+
+	sel := bson.M{
+		"_id":    id,
+		"status": InventoryItemStatusReserving,
+	}
+
+	update := bson.M{
+		"status":   InventoryItemStatusLeased,
+		"lease_id": leaseId,
+	}
+
+	collection.Wake()
+	_, err := collection.FindAndModify(sel, update, &obj)
+	return err
 }

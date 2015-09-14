@@ -63,7 +63,6 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var leaseObj Lease
-		var inventoryObj RedactedInventoryItem
 		decoder := json.NewDecoder(req.Body)
 
 		err := decoder.Decode(&leaseObj)
@@ -77,19 +76,9 @@ func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Colle
 			return
 		}
 
-		isel := bson.M{
-			"_id":    leaseObj.InventoryItemID,
-			"status": InventoryItemStatusAvailable,
-		}
-
-		iupd := bson.M{
-			"status": InventoryItemStatusReserving,
-		}
-
-		ic.Wake()
-		_, err = ic.FindAndModify(isel, iupd, &inventoryObj)
+		err = InventoryItemReservingStatus(leaseObj.InventoryItemID, ic)
 		if err != nil {
-			Formatter().JSON(w, http.StatusNotFound, errorMessage(ErrInventoryNotAvailable.Error()))
+			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
 			return
 		}
 
@@ -97,23 +86,15 @@ func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Colle
 		leaseObj.ID = bson.NewObjectId()
 		_, err = lc.UpsertID(leaseObj.ID, leaseObj)
 		if err != nil {
-			//TODO(dnem) return inventory back to original state
+			e := InventoryItemAvailableStatus(leaseObj.InventoryItemID, ic)
+			if e != nil {
+				log.Printf("Could not release Inventory Item %s", leaseObj.InventoryItemID.Hex())
+			}
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
 			return
 		}
 
-		isel2 := bson.M{
-			"_id":    inventoryObj.ID,
-			"status": InventoryItemStatusReserving,
-		}
-
-		iupd2 := bson.M{
-			"status":   InventoryItemStatusLeased,
-			"lease_id": leaseObj.ID,
-		}
-
-		ic.Wake()
-		_, err = ic.FindAndModify(isel2, iupd2, &inventoryObj)
+		err = InventoryItemLeasedStatus(leaseObj.InventoryItemID, leaseObj.ID, ic)
 		if err != nil {
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
 			return
