@@ -13,13 +13,13 @@ $ cd $GOPATH/src/github.com/pivotal-pez
 $ git clone https://github.com/pivotal-pez/pezinventory.git && cd pezinventory
 ```
 
-Run the `init_developer_environment` script to copy the files from the samples directory into a local_wercker_configs in your project root.
+Run the `init_developer_environment` script to copy the files from the samples directory into a local_wercker_configs directory in your project root.
 
 ```
 $ ./init_developer_environment
 ```
 
-Configure and start a local docker environment.  If you already have docker configured locally, you can safely ignore these steps.  The following steps show how to install and configure [docker-machine](http://docs.docker.com/machine/). All subsequent instructions will assume you are using docker-machine for your local docker environment.
+Configure and start a local docker environment.  If you already have docker configured locally, you can safely ignore these next steps.  The following steps show how to install and configure [docker-machine](http://docs.docker.com/machine/). All subsequent instructions will assume you are using docker-machine for your local docker environment.
 
 ```
 $ brew update
@@ -122,9 +122,9 @@ Watermark- %
 $ ./runlocaldeploy local_wercker_configs/myenv
 ```
 
-This will run a different wercker pipeline, governed by the files in `local_wercker_configs`.  As it is configured by default in the samples directory, this, too, will run the unit & integration tests, linting, and coverage analysis.  However, this can be easily changed by editing `wercker_local_deploy.yml`.
+This will run a different wercker pipeline, governed by the files in `local_wercker_configs`.  As it is configured by default, this, too, will run the unit & integration tests, linting, and coverage analysis.  However, this can be easily changed by editing `wercker_local_deploy.yml`.
 
-This command differs from `./testrunner` in that it will start the server and leave it running so that you can interact with it.  It publishes the server on the docker host IP address on port 80.
+The `runlocaldeploy` command differs from `testrunner` in that it will start the server and leave it running so that you can interact with it.  It publishes the server on the docker host IP address on port 80.
 
 ```
 ...

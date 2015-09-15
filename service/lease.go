@@ -62,7 +62,7 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 //and calls dispenser to provision that InventoryItem to the requestor.
 //
 //Unless supplied, the StartDate and EndDate values will be calculated according to the
-//time of the invoation and the DurationDays value.  If DurationDays is not supplied, it
+//time of the invocation and the DurationDays value.  If DurationDays is not supplied, it
 //will default to 14.
 //
 //NOTE: The call to dispenser is not yet implemented.
