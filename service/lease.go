@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/pivotal-pez/pezinventory/service/integrations"
@@ -16,7 +17,7 @@ type Lease struct {
 	ID                bson.ObjectId          `bson:"_id,omitempty" json:"id"`
 	InventoryItemID   bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id"`
 	User              string                 `json:"user"`
-	Duration          string                 `json:"duration"`
+	DurationDays      int                    `json:"duration_days"`
 	StartDate         string                 `json:"start_date"`
 	EndDate           string                 `json:"end_date"`
 	Status            string                 `json:"status"`
@@ -29,7 +30,7 @@ type RedactedLease struct {
 	ID              bson.ObjectId          `bson:"_id,omitempty" json:"id"`
 	InventoryItemID bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id"`
 	User            string                 `json:"user"`
-	Duration        string                 `json:"duration"`
+	DurationDays    int                    `json:"duration_days"`
 	StartDate       string                 `json:"start_date"`
 	EndDate         string                 `json:"end_date"`
 	Status          string                 `json:"status"`
@@ -59,54 +60,13 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 
 //LeaseInventoryItemHandler creates a new lease record against an available InventoryItem
 //and calls dispenser to provision that InventoryItem to the requestor.
-//NOTE: call to dispenser not implemented
+//
+//Unless supplied, the StartDate and EndDate values will be calculated according to the
+//time of the invoation and the DurationDays value.  If DurationDays is not supplied, it
+//will default to 14.
+//
+//NOTE: The call to dispenser is not yet implemented.
 func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Collection) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		var leaseObj Lease
-		decoder := json.NewDecoder(req.Body)
-
-		err := decoder.Decode(&leaseObj)
-		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
-			return
-		}
-
-		if leaseObj.InventoryItemID == "" {
-			Formatter().JSON(w, http.StatusBadRequest, errorMessage("inventory_item_id must be specified"))
-			return
-		}
-
-		err = InventoryItemReservingStatus(leaseObj.InventoryItemID, ic)
-		if err != nil {
-			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
-			return
-		}
-
-		lc.Wake()
-		leaseObj.ID = bson.NewObjectId()
-		_, err = lc.UpsertID(leaseObj.ID, leaseObj)
-		if err != nil {
-			e := InventoryItemAvailableStatus(leaseObj.InventoryItemID, ic)
-			if e != nil {
-				log.Printf("Could not release Inventory Item %s", leaseObj.InventoryItemID.Hex())
-			}
-			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
-			return
-		}
-
-		err = InventoryItemLeasedStatus(leaseObj.InventoryItemID, leaseObj.ID, ic)
-		if err != nil {
-			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
-			return
-		}
-
-		Formatter().JSON(w, http.StatusOK, leaseObj)
-	}
-}
-
-//InsertLeaseRecordHandler performs an upsert on a new/existing lease record.
-//FIXME(dnem) This should be modified to handle lease updates via  PATCH /v1/leases
-func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var obj Lease
 		decoder := json.NewDecoder(req.Body)
@@ -117,18 +77,44 @@ func InsertLeaseRecordHandler(collection integrations.Collection) http.HandlerFu
 			return
 		}
 
-		if obj.ID == "" {
-			obj.ID = bson.NewObjectId()
+		if obj.InventoryItemID == "" {
+			Formatter().JSON(w, http.StatusBadRequest, errorMessage("inventory_item_id must be specified"))
+			return
 		}
 
-		collection.Wake()
-		info, err := collection.UpsertID(obj.ID, obj)
-		if err != nil {
-			log.Println("could not create Lease record")
-			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
-		} else {
-			log.Println(info)
-			Formatter().JSON(w, http.StatusOK, successMessage(info))
+		if obj.StartDate == "" || obj.EndDate == "" {
+			if obj.DurationDays <= 0 {
+				obj.DurationDays = 14
+			}
+			epoch := time.Now()
+			obj.StartDate = epoch.String()
+			obj.EndDate = epoch.AddDate(0, 0, obj.DurationDays).String()
 		}
+
+		err = InventoryItemReservingStatus(obj.InventoryItemID, ic)
+		if err != nil {
+			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
+			return
+		}
+
+		lc.Wake()
+		obj.ID = bson.NewObjectId()
+		_, err = lc.UpsertID(obj.ID, obj)
+		if err != nil {
+			e := InventoryItemAvailableStatus(obj.InventoryItemID, ic)
+			if e != nil {
+				log.Printf("Could not release Inventory Item %s", obj.InventoryItemID.Hex())
+			}
+			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			return
+		}
+
+		err = InventoryItemLeasedStatus(obj.InventoryItemID, obj.ID, ic)
+		if err != nil {
+			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			return
+		}
+
+		Formatter().JSON(w, http.StatusOK, obj)
 	}
 }

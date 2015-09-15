@@ -63,7 +63,10 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 		err := decoder.Decode(&i)
 		if err != nil {
 			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
-		} else {
+			return
+		}
+
+		if i.ID == "" {
 			i.ID = bson.NewObjectId()
 		}
 
@@ -73,7 +76,6 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 			log.Println("could not create InventoryItem record")
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
 		} else {
-			log.Println(info)
 			Formatter().JSON(w, http.StatusOK, successMessage(info))
 		}
 	}
@@ -89,7 +91,9 @@ func InventoryItemReservingStatus(id bson.ObjectId, collection integrations.Coll
 	}
 
 	update := bson.M{
-		"status": InventoryItemStatusReserving,
+		"$set": bson.M{
+			"status": InventoryItemStatusReserving,
+		},
 	}
 
 	collection.Wake()
@@ -111,7 +115,9 @@ func InventoryItemAvailableStatus(id bson.ObjectId, collection integrations.Coll
 	}
 
 	update := bson.M{
-		"status": InventoryItemStatusAvailable,
+		"$set": bson.M{
+			"status": InventoryItemStatusAvailable,
+		},
 	}
 
 	collection.Wake()
@@ -130,8 +136,10 @@ func InventoryItemLeasedStatus(id bson.ObjectId, leaseId bson.ObjectId, collecti
 	}
 
 	update := bson.M{
-		"status":   InventoryItemStatusLeased,
-		"lease_id": leaseId,
+		"$set": bson.M{
+			"status":   InventoryItemStatusLeased,
+			"lease_id": leaseId,
+		},
 	}
 
 	collection.Wake()
