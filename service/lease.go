@@ -115,6 +115,6 @@ func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Colle
 			return
 		}
 
-		Formatter().JSON(w, http.StatusOK, obj)
+		Formatter().JSON(w, http.StatusOK, successMessage(obj))
 	}
 }

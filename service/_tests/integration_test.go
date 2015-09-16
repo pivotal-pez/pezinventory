@@ -75,7 +75,7 @@ var (
 	}
 )
 
-var _ = Describe("/v1/inventory", func() {
+var _ = Describe("Server Integration Tests", func() {
 
 	BeforeEach(func() {
 		os.Setenv("INVENTORY_DB_NAME", inventoryDB)
@@ -89,19 +89,6 @@ var _ = Describe("/v1/inventory", func() {
 		os.Setenv("VCAP_APPLICATION", VcapApplicationFormatter)
 		appEnv, _ = cfenv.Current()
 	})
-
-	// AfterEach(func() {
-	// 	session, err := mgo.Dial(mongoURI)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	i := session.DB(os.Getenv("INVENTORY_DB_NAME")).C(InventoryCollectionName)
-
-	// 	_, err = i.RemoveAll(bson.M{})
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// })
 
 	Context("when inventory does not exist", func() {
 		BeforeEach(func() {
@@ -163,15 +150,25 @@ var _ = Describe("/v1/inventory", func() {
 		})
 
 		It("POST /v1/leases returns a status code of 200 and the new lease record", func() {
+			var rm ResponseMessage
 			var newLease RedactedLease
 			server.ServeHTTP(recorder, request)
-			Ω(recorder.Code).To(Equal(200))
-			err := json.Unmarshal(recorder.Body.Bytes(), &newLease)
+			Expect(recorder.Code).To(Equal(200))
+			err := json.Unmarshal(recorder.Body.Bytes(), &rm)
+			if err != nil {
+				log.Fatal(err)
+			}
+			Expect(rm.Status).To(ContainSubstring("success"))
+			b, err := json.Marshal(rm.Data)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = json.Unmarshal(b, &newLease)
 			if err != nil {
 				log.Fatal(err)
 			}
 			newLeaseID = newLease.ID
-			Ω(newLease.User).To(ContainSubstring("testuser"))
+			Expect(newLease.User).To(ContainSubstring("testuser"))
 		})
 	})
 
