@@ -50,7 +50,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 			LeaseCollectionName)
 	)
 
-	Context("when the hander is called without a LeaseID", func() {
+	Context("when the handler is called without a LeaseID", func() {
 		It("should return an error response", func() {
 			server := httptest.NewServer(http.HandlerFunc(http.HandlerFunc(FindLeaseByIDHandler(leaseCollection))))
 			defer server.Close()
@@ -72,7 +72,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 		})
 	})
 
-	Context("when the hander is called with a valid LeaseID for record 1", func() {
+	Context("when the handler is called with a valid LeaseID for record 1", func() {
 		It("should return lease record 1", func() {
 
 			mx := mux.NewRouter()
@@ -99,7 +99,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 		})
 	})
 
-	Context("when the hander is called with a valid LeaseID for record 2", func() {
+	Context("when the handler is called with a valid LeaseID for record 2", func() {
 		It("should return lease record 2", func() {
 
 			mx := mux.NewRouter()
