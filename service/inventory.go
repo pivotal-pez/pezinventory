@@ -36,15 +36,15 @@ type RedactedInventoryItem struct {
 }
 
 //ListInventoryItemsHandler -
-// currently selects using a nil selector
 func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		selector := bson.M{}
+		params := ExtractRequestParams(req.URL.Query())
+
 		items := make([]RedactedInventoryItem, 0)
 
-		if err := collection.Find(selector, &items); err == nil {
+		if err := collection.Find(params.Selector, &items); err == nil {
 			Formatter().JSON(w, http.StatusOK, successMessage(&items))
 		} else {
 			log.Println("inventory find failed")

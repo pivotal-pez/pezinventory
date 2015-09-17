@@ -80,7 +80,9 @@ var _ = Describe("ExtractQueryParams", func() {
 
 		It("the request parameters object should be correctly populated", func() {
 			Expect(rp.Selector["_id"]).NotTo(BeNil())
+			Expect(rp.Selector["_id"].(string)).To(Equal("1"))
 			Expect(rp.Selector["status"]).NotTo(BeNil())
+			Expect(rp.Selector["status"].(string)).To(Equal("available"))
 			Expect(rp.Scope[0]).To(Equal("_id"))
 			Expect(rp.Scope[1]).To(Equal("status"))
 			Expect(rp.Limit).To(Equal(15))

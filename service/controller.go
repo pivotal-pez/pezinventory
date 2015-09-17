@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -55,7 +57,7 @@ type RequestParams struct {
 	//Selector holds the query parameters specified in the request.
 	//Defaults to nil.
 	//Consider type bson.M in lieu of map[string]interface{}
-	Selector map[string]interface{} `json:"selector,omitempty"`
+	Selector bson.M `json:"selector,omitempty"`
 	//Scope specifies the fields to be included in the result set.
 	//Defaults to nil.  A nil scope will return the entire dataset.
 	Scope []string `json:"scope,omitempty"`
@@ -79,7 +81,7 @@ func ExtractRequestParams(query url.Values) (p *RequestParams) {
 func newRequestParams(raw url.Values) (p *RequestParams) {
 	p = new(RequestParams)
 	p.RawQuery = raw
-	p.Selector = map[string]interface{}{}
+	p.Selector = bson.M{}
 	p.Limit = limitDefault
 	return
 }
@@ -89,7 +91,7 @@ func (p *RequestParams) parseSelector() {
 		if k == scopeKeyword || k == limitKeyword || k == offsetKeyword {
 			continue
 		} else {
-			p.Selector[k] = v
+			p.Selector[k] = v[0]
 		}
 	}
 	return
