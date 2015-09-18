@@ -25,14 +25,14 @@ type InventoryItem struct {
 
 //RedactedInventoryItem wraps the inventory collection omitting private attributes.
 type RedactedInventoryItem struct {
-	ID           bson.ObjectId          `bson:"_id,omitempty" json:"id"`
-	SKU          string                 `json:"sku"`
-	Tier         int                    `json:"tier"`
-	OfferingType string                 `json:"offering_type"`
-	Size         string                 `json:"size"`
-	Attributes   map[string]interface{} `json:"attributes"`
-	Status       string                 `json:"status"`
-	LeaseID      bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id"`
+	ID           bson.ObjectId          `bson:"_id,omitempty" json:"id,omitempty"`
+	SKU          string                 `json:"sku,omitempty"`
+	Tier         int                    `json:"tier,omitempty"`
+	OfferingType string                 `json:"offering_type,omitempty"`
+	Size         string                 `json:"size,omitempty"`
+	Attributes   map[string]interface{} `json:"attributes,omitempty"`
+	Status       string                 `json:"status,omitempty"`
+	LeaseID      bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id,omitempty"`
 }
 
 //ListInventoryItemsHandler -
