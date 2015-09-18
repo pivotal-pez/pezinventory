@@ -21,8 +21,12 @@ func NewCollectionDialer(url string, dbname string, collectionname string) (coll
 }
 
 //Find -- finds all records matching given selector
-func (s *CollectionRepo) Find(selector interface{}, result interface{}) (err error) {
-	err = s.Col.Find(selector.(bson.M)).All(result)
+func (s *CollectionRepo) Find(selector interface{}, scope interface{}, limit int, offset int, result interface{}) (count int, err error) {
+	count, err = s.Col.Find(selector.(bson.M)).Count()
+	if err != nil {
+		return
+	}
+	err = s.Col.Find(selector.(bson.M)).Select(scope.(bson.M)).Limit(limit).Skip(offset).All(result)
 	return
 }
 

@@ -44,8 +44,8 @@ func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 
 		items := make([]RedactedInventoryItem, 0)
 
-		if err := collection.Find(params.Selector, &items); err == nil {
-			Formatter().JSON(w, http.StatusOK, successMessage(&items))
+		if count, err := collection.Find(params.Selector, params.Scope, params.Limit, params.Offset, &items); err == nil {
+			Formatter().JSON(w, http.StatusOK, collectionMessage(&items, count, params))
 		} else {
 			log.Println("inventory find failed")
 			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))

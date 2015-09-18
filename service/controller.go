@@ -27,7 +27,7 @@ type ResponseMessage struct {
 	//Message contains the nature of an error
 	Message string `json:"message,omitempty"`
 	//Count contains the number of records in the result set
-	Count string `json:"count,omitempty"`
+	Count int `json:"count,omitempty"`
 	//Prev provides the URL to the previous result set
 	Prev string `json:"prev_url,omitempty"`
 	//Next provides the URL to the next result set
@@ -38,6 +38,15 @@ func successMessage(data interface{}) (rsp ResponseMessage) {
 	rsp = ResponseMessage{
 		Status: successStatus,
 		Data:   data,
+	}
+	return
+}
+
+func collectionMessage(data interface{}, count int, params *RequestParams) (rsp ResponseMessage) {
+	rsp = ResponseMessage{
+		Status: successStatus,
+		Data:   data,
+		Count:  count,
 	}
 	return
 }
@@ -55,17 +64,17 @@ type RequestParams struct {
 	//RawQuery contains the raw query string Values object
 	RawQuery url.Values `json:"raw_query"`
 	//Selector holds the query parameters specified in the request.
-	//Defaults to nil.
-	//Consider type bson.M in lieu of map[string]interface{}
-	Selector bson.M `json:"selector,omitempty"`
+	//Defaults to bson.M{}.
+	Selector bson.M `json:"selector"`
 	//Scope specifies the fields to be included in the result set.
-	//Defaults to nil.  A nil scope will return the entire dataset.
-	Scope []string `json:"scope,omitempty"`
+	//Defaults to bson.M{}.  A nil scope will return the entire dataset.
+	Scope bson.M `json:"scope"`
 	//Limit specifies the maximum number of records to be retrieved
 	//for a given request.  Limit defaults to 10.
 	Limit int `json:"limit"`
 	//Offset specifies the number of records to skip in the result set.
-	//This is useful for paging through large result sets. Offset defaults to 0.
+	//This is useful for paging through large result sets.
+	//Offset defaults to 0.
 	Offset int `json:"offset"`
 }
 
@@ -82,6 +91,7 @@ func newRequestParams(raw url.Values) (p *RequestParams) {
 	p = new(RequestParams)
 	p.RawQuery = raw
 	p.Selector = bson.M{}
+	p.Scope = bson.M{}
 	p.Limit = limitDefault
 	return
 }
@@ -100,7 +110,10 @@ func (p *RequestParams) parseSelector() {
 func (p *RequestParams) parseScope() {
 	s := p.RawQuery.Get(scopeKeyword)
 	if len(s) > 0 {
-		p.Scope = strings.Split(s, ",")
+		s1 := strings.Split(s, ",")
+		for _, v := range s1 {
+			p.Scope[v] = 1
+		}
 	}
 	return
 }

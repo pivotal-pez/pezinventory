@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -43,9 +45,8 @@ var _ = Describe("ExtractQueryParams", func() {
 		}
 
 		It("should have a default values", func() {
-			//log.Print(rp)
-			Expect(rp.Selector).To(BeNil())
-			Expect(rp.Scope).To(BeNil())
+			Expect(rp.Selector).To(Equal(bson.M{}))
+			Expect(rp.Scope).To(Equal(bson.M{}))
 			Expect(rp.Limit).To(Equal(10))
 			Expect(rp.Offset).To(Equal(0))
 		})
@@ -53,6 +54,12 @@ var _ = Describe("ExtractQueryParams", func() {
 	Context("when the handler is called with parameters", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+			// log.Printf("Scheme: %+v", req.URL.Scheme)
+			// log.Printf("Host: %+v", req.URL.Host)
+			// log.Printf("Path: %+v", req.URL.Path)
+			// log.Printf("RawQuery: %+v", req.URL.RawQuery)
+			// log.Printf("Values: %+v", req.URL.Query())
+
 			params := ExtractRequestParams(req.URL.Query())
 			Formatter().JSON(w, http.StatusOK, &params)
 			return
@@ -83,8 +90,10 @@ var _ = Describe("ExtractQueryParams", func() {
 			Expect(rp.Selector["_id"].(string)).To(Equal("1"))
 			Expect(rp.Selector["status"]).NotTo(BeNil())
 			Expect(rp.Selector["status"].(string)).To(Equal("available"))
-			Expect(rp.Scope[0]).To(Equal("_id"))
-			Expect(rp.Scope[1]).To(Equal("status"))
+			Expect(rp.Scope["_id"]).NotTo(BeNil())
+			Expect(rp.Scope["_id"].(float64)).To(Equal(float64(1)))
+			Expect(rp.Scope["status"]).NotTo(BeNil())
+			Expect(rp.Scope["status"].(float64)).To(Equal(float64(1)))
 			Expect(rp.Limit).To(Equal(15))
 			Expect(rp.Offset).To(Equal(30))
 		})
