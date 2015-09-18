@@ -42,7 +42,7 @@ func (s *FakeCollection) Wake() {
 
 //Find -- finds all records matching given selector
 func (s *FakeCollection) Find(selector interface{}, scope interface{}, limit int, offset int, result interface{}) (count int, err error) {
-	count = 1
+	count = 2 // hardcoded based on fakeCollection
 	err = json.Unmarshal(s.Data, result)
 	return
 }

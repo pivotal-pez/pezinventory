@@ -37,6 +37,24 @@ type RedactedLease struct {
 	Attributes      map[string]interface{} `json:"attributes"`
 }
 
+//FindLeasesHandler will return a collection of redacted lease records constrained
+//by optional request parameters:
+func FindLeasesHandler(collection integrations.Collection) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		collection.Wake()
+
+		params := ExtractRequestParams(req.URL.Query())
+
+		leases := make([]RedactedLease, 0)
+
+		if count, err := collection.Find(params.Selector, params.Scope, params.Limit, params.Offset, &leases); err == nil {
+			Formatter().JSON(w, http.StatusOK, collectionMessage(&leases, count, params))
+		} else {
+			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
+		}
+	}
+}
+
 //FindLeaseByIDHandler will return a redacted lease record for the given ID.
 func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {

@@ -61,8 +61,9 @@ var _ = Describe("ListInventoryItemsHandler", func() {
 				log.Fatal(err)
 			}
 
-			Ω(payload).To(ContainSubstring("2C.small"))
-			Ω(payload).ShouldNot(ContainElement("private_atrributes"))
+			Expect(payload).To(ContainSubstring("2C.small"))
+			Expect(payload).ShouldNot(ContainSubstring("private_atrributes"))
+			Expect(payload).To(ContainSubstring("count"))
 
 		})
 	})
@@ -109,7 +110,7 @@ var _ = Describe("InsertInventoryItemHandler", func() {
 		}
 
 		It("the return value should contain the item id", func() {
-			Ω(payload).To(ContainSubstring(fakeItem.ID.Hex()))
+			Expect(payload).To(ContainSubstring(fakeItem.ID.Hex()))
 		})
 	})
 })

@@ -189,6 +189,24 @@ var _ = Describe("Server Integration Tests", func() {
 		})
 	})
 
+	Context("when leases exist", func() {
+		BeforeEach(func() {
+			server = NewServer(appEnv)
+			recorder = httptest.NewRecorder()
+			request, _ = http.NewRequest(
+				"GET",
+				"/v1/leases?user=testuser",
+				nil)
+		})
+
+		It("GET /v1/leases?user=testuser returns a collection of lease objects", func() {
+			server.ServeHTTP(recorder, request)
+			Expect(recorder.Code).To(Equal(200))
+			Expect(recorder.Body).To(ContainSubstring("testuser"))
+			Expect(recorder.Body).To(ContainSubstring("count"))
+		})
+	})
+
 	Context("when inventory is not available to lease", func() {
 		BeforeEach(func() {
 			b, err := json.Marshal(lease)

@@ -1,6 +1,7 @@
 package pezinventory_test
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -50,6 +51,40 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 			LeaseCollectionName)
 	)
 
+	Context("when the FindLeasesHandler is called without parameters", func() {
+		It("should return a collection of 2 lease objects", func() {
+			mx := mux.NewRouter()
+			mx.HandleFunc("/v1/leases", FindLeasesHandler(leaseCollection)).Methods("GET")
+
+			server := httptest.NewServer(mx)
+			defer server.Close()
+
+			leaseURL := server.URL + "/v1/leases"
+
+			res, err := http.Get(leaseURL)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			payload, err := ioutil.ReadAll(res.Body)
+			res.Body.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			var rm ResponseMessage
+			err = json.Unmarshal(payload, &rm)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Expect(rm.Status).To(Equal("success"))
+			Expect(rm.Count).To(Equal(2))
+			Expect(payload).To(ContainSubstring("testuser-1"))
+			Expect(payload).To(ContainSubstring("testuser-2"))
+		})
+	})
+
 	Context("when the handler is called without a LeaseID", func() {
 		It("should return an error response", func() {
 			server := httptest.NewServer(http.HandlerFunc(http.HandlerFunc(FindLeaseByIDHandler(leaseCollection))))
@@ -66,9 +101,9 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				log.Fatal(err)
 			}
 
-			Ω(payload).To(ContainSubstring("error"))
-			Ω(payload).Should(ContainSubstring("lease id must be specified"))
-			Ω(payload).ShouldNot(ContainElement("data"))
+			Expect(payload).To(ContainSubstring("error"))
+			Expect(payload).Should(ContainSubstring("lease id must be specified"))
+			Expect(payload).ShouldNot(ContainElement("data"))
 		})
 	})
 
@@ -94,8 +129,8 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				log.Fatal(err)
 			}
 
-			Ω(payload).To(ContainSubstring("success"))
-			Ω(payload).To(ContainSubstring(id1.Hex()))
+			Expect(payload).To(ContainSubstring("success"))
+			Expect(payload).To(ContainSubstring(id1.Hex()))
 		})
 	})
 
@@ -121,8 +156,8 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				log.Fatal(err)
 			}
 
-			Ω(payload).To(ContainSubstring("success"))
-			Ω(payload).To(ContainSubstring(id2.Hex()))
+			Expect(payload).To(ContainSubstring("success"))
+			Expect(payload).To(ContainSubstring(id2.Hex()))
 		})
 	})
 
