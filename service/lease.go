@@ -28,14 +28,14 @@ type Lease struct {
 
 //RedactedLease wraps the leases collection omitting private attributes.
 type RedactedLease struct {
-	ID              bson.ObjectId          `bson:"_id,omitempty" json:"id"`
-	InventoryItemID bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id"`
-	User            string                 `json:"user"`
-	DurationDays    int                    `json:"duration_days"`
-	StartDate       string                 `json:"start_date"`
-	EndDate         string                 `json:"end_date"`
-	Status          string                 `json:"status"`
-	Attributes      map[string]interface{} `json:"attributes"`
+	ID              bson.ObjectId          `bson:"_id,omitempty" json:"id,omitempty"`
+	InventoryItemID bson.ObjectId          `bson:"inventory_item_id,omitempty" json:"inventory_item_id,omitempty"`
+	User            string                 `json:"user,omitempty"`
+	DurationDays    int                    `json:"duration_days,omitempty"`
+	StartDate       string                 `json:"start_date,omitempty"`
+	EndDate         string                 `json:"end_date,omitempty"`
+	Status          string                 `json:"status,omitempty"`
+	Attributes      map[string]interface{} `json:"attributes,omitempty"`
 }
 
 //FindLeasesHandler will return a collection of redacted lease records constrained
