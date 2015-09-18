@@ -1,4 +1,4 @@
-package pezinventory_test
+package paged_test
 
 import (
 	"encoding/json"
@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"gopkg.in/mgo.v2/bson"
-
+	. "github.com/dnem/paged"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/pivotal-pez/pezinventory/service"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var _ = Describe("ExtractQueryParams", func() {
@@ -45,10 +44,14 @@ var _ = Describe("ExtractQueryParams", func() {
 		}
 
 		It("should have a default values", func() {
-			Expect(rp.Selector).To(Equal(bson.M{}))
-			Expect(rp.Scope).To(Equal(bson.M{}))
-			Expect(rp.Limit).To(Equal(10))
-			Expect(rp.Offset).To(Equal(0))
+			Expect(rp.Q).To(Equal(bson.M{}))
+			Expect(rp.S).To(Equal(bson.M{}))
+			Expect(rp.L).To(Equal(10))
+			Expect(rp.F).To(Equal(0))
+			Expect(rp.Selector()).To(Equal(rp.Q))
+			Expect(rp.Scope()).To(Equal(rp.S))
+			Expect(rp.Limit()).To(Equal(rp.L))
+			Expect(rp.Offset()).To(Equal(rp.F))
 		})
 	})
 	Context("when the handler is called with parameters", func() {
@@ -86,17 +89,20 @@ var _ = Describe("ExtractQueryParams", func() {
 		}
 
 		It("the request parameters object should be correctly populated", func() {
-			Expect(rp.Selector["_id"]).NotTo(BeNil())
-			Expect(rp.Selector["_id"].(string)).To(Equal("1"))
-			Expect(rp.Selector["status"]).NotTo(BeNil())
-			Expect(rp.Selector["status"].(string)).To(Equal("available"))
-			Expect(rp.Scope["_id"]).NotTo(BeNil())
-			Expect(rp.Scope["_id"].(float64)).To(Equal(float64(1)))
-			Expect(rp.Scope["status"]).NotTo(BeNil())
-			Expect(rp.Scope["status"].(float64)).To(Equal(float64(1)))
-			Expect(rp.Limit).To(Equal(15))
-			Expect(rp.Offset).To(Equal(30))
+			Expect(rp.Q["_id"]).NotTo(BeNil())
+			Expect(rp.Q["_id"].(string)).To(Equal("1"))
+			Expect(rp.Q["status"]).NotTo(BeNil())
+			Expect(rp.Q["status"].(string)).To(Equal("available"))
+			Expect(rp.S["_id"]).NotTo(BeNil())
+			Expect(rp.S["_id"].(float64)).To(Equal(float64(1)))
+			Expect(rp.S["status"]).NotTo(BeNil())
+			Expect(rp.S["status"].(float64)).To(Equal(float64(1)))
+			Expect(rp.L).To(Equal(15))
+			Expect(rp.F).To(Equal(30))
+			Expect(rp.Selector()).To(Equal(rp.Q))
+			Expect(rp.Scope()).To(Equal(rp.S))
+			Expect(rp.Limit()).To(Equal(rp.L))
+			Expect(rp.Offset()).To(Equal(rp.F))
 		})
 	})
-
 })

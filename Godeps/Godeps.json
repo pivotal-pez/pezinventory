@@ -11,19 +11,13 @@
 			"Rev": "c682e189b94b0b2ec6edf12363df2eecf29d7256"
 		},
 		{
-			"ImportPath": "github.com/codegangsta/inject",
-			"Comment": "v1.0-rc1-10-g33e0aa1",
-			"Rev": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
-		},
-		{
 			"ImportPath": "github.com/codegangsta/negroni",
 			"Comment": "v0.1-70-gc7477ad",
 			"Rev": "c7477ad8e330bef55bf1ebe300cf8aa67c492d1b"
 		},
 		{
-			"ImportPath": "github.com/go-martini/martini",
-			"Comment": "v1.0-128-ge038957",
-			"Rev": "e038957346d959db124df28ebf5c0adb7e7866bf"
+			"ImportPath": "github.com/dnem/paged",
+			"Rev": "08d741f04e59f2e2a43aa346f3c30b688c864c0f"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -32,10 +26,6 @@
 		{
 			"ImportPath": "github.com/gorilla/mux",
 			"Rev": "ee1815431e497d3850809578c93ab6705f1a19f7"
-		},
-		{
-			"ImportPath": "github.com/martini-contrib/render",
-			"Rev": "b65063311fac6cbf84d3538f5715f7847e648322"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
@@ -50,10 +40,6 @@
 			"ImportPath": "github.com/onsi/gomega",
 			"Comment": "v1.0-53-g1d25b76",
 			"Rev": "1d25b76be4fe52267f785ebe434ae816489e3bfa"
-		},
-		{
-			"ImportPath": "github.com/oxtoacart/bpool",
-			"Rev": "754d38fccfc6e52083355014b6abc8d626445dfd"
 		},
 		{
 			"ImportPath": "github.com/unrolled/render",

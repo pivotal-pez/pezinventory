@@ -13,6 +13,7 @@ import (
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/codegangsta/negroni"
+	"github.com/dnem/paged"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/pivotal-pez/pezinventory/service"
@@ -150,7 +151,7 @@ var _ = Describe("Server Integration Tests", func() {
 		})
 
 		It("POST /v1/leases returns a status code of 200 and the new lease record", func() {
-			var rm ResponseMessage
+			var rm paged.ResponseWrapper
 			var newLease RedactedLease
 			server.ServeHTTP(recorder, request)
 			Expect(recorder.Code).To(Equal(200))

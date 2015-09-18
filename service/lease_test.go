@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"time"
 
+	"github.com/dnem/paged"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -72,14 +73,14 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				log.Fatal(err)
 			}
 
-			var rm ResponseMessage
-			err = json.Unmarshal(payload, &rm)
+			var rw paged.ResponseWrapper
+			err = json.Unmarshal(payload, &rw)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			Expect(rm.Status).To(Equal("success"))
-			Expect(rm.Count).To(Equal(2))
+			Expect(rw.Status).To(Equal("success"))
+			Expect(rw.Count).To(Equal(2))
 			Expect(payload).To(ContainSubstring("testuser-1"))
 			Expect(payload).To(ContainSubstring("testuser-2"))
 		})

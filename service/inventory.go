@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dnem/paged"
 	"github.com/pivotal-pez/pezinventory/service/integrations"
 
 	"gopkg.in/mgo.v2/bson"
@@ -40,14 +41,14 @@ func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		params := ExtractRequestParams(req.URL.Query())
+		params := paged.ExtractRequestParams(req.URL.Query())
 
 		items := make([]RedactedInventoryItem, 0)
 
-		if count, err := collection.Find(params.Selector, params.Scope, params.Limit, params.Offset, &items); err == nil {
-			Formatter().JSON(w, http.StatusOK, collectionMessage(&items, count, params))
+		if count, err := collection.Find(params.Selector(), params.Scope(), params.Limit(), params.Offset(), &items); err == nil {
+			Formatter().JSON(w, http.StatusOK, paged.CollectionWrapper(&items, count, params))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, errorMessage(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
 		}
 	}
 }
@@ -61,7 +62,7 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 
 		err := decoder.Decode(&i)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, errorMessage(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, paged.ErrorWrapper(err.Error()))
 			return
 		}
 
@@ -73,9 +74,9 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 		info, err := collection.UpsertID(i.ID, i)
 		if err != nil {
 			log.Println("could not create InventoryItem record")
-			Formatter().JSON(w, http.StatusInternalServerError, errorMessage(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, paged.ErrorWrapper(err.Error()))
 		} else {
-			Formatter().JSON(w, http.StatusOK, successMessage(info))
+			Formatter().JSON(w, http.StatusOK, paged.SuccessWrapper(info))
 		}
 	}
 }
