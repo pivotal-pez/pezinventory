@@ -41,8 +41,8 @@ func (s *FakeCollection) Wake() {
 }
 
 //Find -- finds all records matching given selector
-func (s *FakeCollection) Find(selector interface{}, scope interface{}, limit int, offset int, result interface{}) (count int, err error) {
-	count = 2 // hardcoded based on fakeCollection
+func (s *FakeCollection) Find(params integrations.Pager, result interface{}) (count int, err error) {
+	count = 2
 	err = json.Unmarshal(s.Data, result)
 	return
 }

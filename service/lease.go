@@ -48,7 +48,7 @@ func FindLeasesHandler(collection integrations.Collection) http.HandlerFunc {
 
 		leases := make([]RedactedLease, 0)
 
-		if count, err := collection.Find(params.Selector(), params.Scope(), params.Limit(), params.Offset(), &leases); err == nil {
+		if count, err := collection.Find(params, &leases); err == nil {
 			Formatter().JSON(w, http.StatusOK, paged.CollectionWrapper(&leases, count))
 		} else {
 			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))

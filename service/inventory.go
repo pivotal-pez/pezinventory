@@ -45,7 +45,7 @@ func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerF
 
 		items := make([]RedactedInventoryItem, 0)
 
-		if count, err := collection.Find(params.Selector(), params.Scope(), params.Limit(), params.Offset(), &items); err == nil {
+		if count, err := collection.Find(params, &items); err == nil {
 			Formatter().JSON(w, http.StatusOK, paged.CollectionWrapper(&items, count))
 		} else {
 			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
