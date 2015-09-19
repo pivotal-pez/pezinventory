@@ -17,7 +17,7 @@
 		},
 		{
 			"ImportPath": "github.com/dnem/paged",
-			"Rev": "08d741f04e59f2e2a43aa346f3c30b688c864c0f"
+			"Rev": "a38479697685247e29afe79fb157cd38d339a968"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",

@@ -1,11 +1,10 @@
 package paged
 
 const (
-	SuccessStatus = "success"
-	ErrorStatus   = "error"
-
-	LimitDefault  = 10
-	LimitKeyword  = "limit"
-	ScopeKeyword  = "scope"
-	OffsetKeyword = "offset"
+	successStatus = "success"
+	errorStatus   = "error"
+	limitDefault  = 10
+	limitKeyword  = "limit"
+	scopeKeyword  = "scope"
+	offsetKeyword = "offset"
 )

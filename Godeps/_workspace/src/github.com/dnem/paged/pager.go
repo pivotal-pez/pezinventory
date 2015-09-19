@@ -8,15 +8,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Pager types provide data necessary for mongodb queries to support
-//filtering, scoping, and paging.
-type Pager interface {
-	Selector() bson.M
-	Scope() bson.M
-	Limit() int
-	Offset() int
-}
-
 //RequestParams holds state parsed from a given HTTP request
 type RequestParams struct {
 	//RawQuery contains the raw query string Values object
@@ -36,7 +27,7 @@ type RequestParams struct {
 	F int `json:"offset"`
 }
 
-//ExtractRequestParameters initializes the RequestParams object.
+//ExtractRequestParams initializes the RequestParams object.
 func ExtractRequestParams(query url.Values) (p *RequestParams) {
 	p = newRequestParams(query)
 	p.parseSelector()
@@ -51,29 +42,38 @@ func newRequestParams(raw url.Values) (p *RequestParams) {
 	p.RawQuery = raw
 	p.Q = bson.M{}
 	p.S = bson.M{}
-	p.L = LimitDefault
+	p.L = limitDefault
 	return
 }
 
+//Selector returns a mongodb bson.M object containing the query parameters
+//supplied in the HTTP request.
 func (p *RequestParams) Selector() bson.M {
 	return p.Q
 }
 
+//Scope returns a mongodb bson.M object containing the set of fields to
+//be returned from mongodb.  Empty scope objects will return all fields
+//from the database.
 func (p *RequestParams) Scope() bson.M {
 	return p.S
 }
 
+//Limit returns an integer value indicating the size of the result set
+//returned from the database.
 func (p *RequestParams) Limit() int {
 	return p.L
 }
 
+//Offset returns an integer value indicating the number of records to skip
+//when returning a result set.
 func (p *RequestParams) Offset() int {
 	return p.F
 }
 
 func (p *RequestParams) parseSelector() {
 	for k, v := range p.RawQuery {
-		if k == ScopeKeyword || k == LimitKeyword || k == OffsetKeyword {
+		if k == scopeKeyword || k == limitKeyword || k == offsetKeyword {
 			continue
 		} else {
 			p.Q[k] = v[0]
@@ -83,7 +83,7 @@ func (p *RequestParams) parseSelector() {
 }
 
 func (p *RequestParams) parseScope() {
-	s := p.RawQuery.Get(ScopeKeyword)
+	s := p.RawQuery.Get(scopeKeyword)
 	if len(s) > 0 {
 		s1 := strings.Split(s, ",")
 		for _, v := range s1 {
@@ -94,7 +94,7 @@ func (p *RequestParams) parseScope() {
 }
 
 func (p *RequestParams) parseLimit() {
-	s := p.RawQuery.Get(LimitKeyword)
+	s := p.RawQuery.Get(limitKeyword)
 	if len(s) > 0 {
 		l, err := strconv.Atoi(s)
 		if err == nil {
@@ -105,7 +105,7 @@ func (p *RequestParams) parseLimit() {
 }
 
 func (p *RequestParams) parseOffset() {
-	s := p.RawQuery.Get(OffsetKeyword)
+	s := p.RawQuery.Get(offsetKeyword)
 	if len(s) > 0 {
 		o, err := strconv.Atoi(s)
 		if err == nil {
