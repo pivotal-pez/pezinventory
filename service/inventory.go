@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dnem/paged"
-	"github.com/pivotal-pez/pezinventory/service/integrations"
-
+	"github.com/pivotal-pez/cfmgo"
+	"github.com/pivotal-pez/cfmgo/params"
+	"github.com/pivotal-pez/cfmgo/wrapper"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -37,32 +37,32 @@ type RedactedInventoryItem struct {
 }
 
 //ListInventoryItemsHandler -
-func ListInventoryItemsHandler(collection integrations.Collection) http.HandlerFunc {
+func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		params := paged.ExtractRequestParams(req.URL.Query())
+		params := params.ExtractRequestParams(req.URL.Query())
 
 		items := make([]RedactedInventoryItem, 0)
 
 		if count, err := collection.Find(params, &items); err == nil {
-			Formatter().JSON(w, http.StatusOK, paged.CollectionWrapper(&items, count))
+			Formatter().JSON(w, http.StatusOK, wrapper.CollectionWrapper(&items, count))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
 		}
 	}
 }
 
 //InsertInventoryItemHandler -
 //FIXME(dnem) consider returning ID rather than mgo.ChangeInfo
-func InsertInventoryItemHandler(collection integrations.Collection) http.HandlerFunc {
+func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var i InventoryItem
 		decoder := json.NewDecoder(req.Body)
 
 		err := decoder.Decode(&i)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper(err.Error()))
 			return
 		}
 
@@ -74,15 +74,15 @@ func InsertInventoryItemHandler(collection integrations.Collection) http.Handler
 		info, err := collection.UpsertID(i.ID, i)
 		if err != nil {
 			log.Println("could not create InventoryItem record")
-			Formatter().JSON(w, http.StatusInternalServerError, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
 		} else {
-			Formatter().JSON(w, http.StatusOK, paged.SuccessWrapper(info))
+			Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(info))
 		}
 	}
 }
 
 //InventoryItemReservingStatus updates the status from "available" to "reserving".
-func InventoryItemReservingStatus(id bson.ObjectId, collection integrations.Collection) error {
+func InventoryItemReservingStatus(id bson.ObjectId, collection cfmgo.Collection) error {
 	var obj RedactedInventoryItem
 
 	sel := bson.M{
@@ -106,7 +106,7 @@ func InventoryItemReservingStatus(id bson.ObjectId, collection integrations.Coll
 
 //InventoryItemAvailableStatus reverts the status from "reserving" to "available" in the case
 //where a lease operation is unsuccessful.
-func InventoryItemAvailableStatus(id bson.ObjectId, collection integrations.Collection) error {
+func InventoryItemAvailableStatus(id bson.ObjectId, collection cfmgo.Collection) error {
 	var obj RedactedInventoryItem
 
 	sel := bson.M{
@@ -127,7 +127,7 @@ func InventoryItemAvailableStatus(id bson.ObjectId, collection integrations.Coll
 
 //InventoryItemLeasedStatus updates the status from "reserving" to "leased" and supplies
 //the lease_id value.
-func InventoryItemLeasedStatus(id bson.ObjectId, leaseId bson.ObjectId, collection integrations.Collection) error {
+func InventoryItemLeasedStatus(id bson.ObjectId, leaseId bson.ObjectId, collection cfmgo.Collection) error {
 	var obj RedactedInventoryItem
 
 	sel := bson.M{

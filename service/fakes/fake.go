@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/pivotal-pez/pezinventory/service/integrations"
+	"github.com/pivotal-pez/cfmgo"
+
 	"gopkg.in/mgo.v2"
 )
 
 //FakeNewCollectionDialer -
-func FakeNewCollectionDialer(c interface{}) func(url, dbname, collectionname string) (col integrations.Collection, err error) {
+func FakeNewCollectionDialer(c interface{}) func(url, dbname, collectionname string) (col cfmgo.Collection, err error) {
 	b, err := json.Marshal(c)
 	if err != nil {
 		panic("shit is broken")
 	}
 
-	return func(url, dbname, collectionname string) (col integrations.Collection, err error) {
+	return func(url, dbname, collectionname string) (col cfmgo.Collection, err error) {
 		col = &FakeCollection{
 			Data: b,
 		}
@@ -41,7 +42,7 @@ func (s *FakeCollection) Wake() {
 }
 
 //Find -- finds all records matching given selector
-func (s *FakeCollection) Find(params integrations.Pager, result interface{}) (count int, err error) {
+func (s *FakeCollection) Find(params cfmgo.Params, result interface{}) (count int, err error) {
 	count = 2
 	err = json.Unmarshal(s.Data, result)
 	return

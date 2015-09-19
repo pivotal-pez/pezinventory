@@ -1,4 +1,4 @@
-package integrations
+package cfmgo
 
 import (
 	"gopkg.in/mgo.v2"
@@ -10,7 +10,7 @@ type (
 	Collection interface {
 		Wake()
 		Close()
-		Find(params Pager, result interface{}) (count int, err error)
+		Find(params Params, result interface{}) (count int, err error)
 		FindOne(id string, result interface{}) (err error)
 		UpsertID(selector interface{}, update interface{}) (info *mgo.ChangeInfo, err error)
 		FindAndModify(selector interface{}, update interface{}, target interface{}) (info *mgo.ChangeInfo, err error)
@@ -27,7 +27,7 @@ type (
 	CollectionDialer func(url string, dbname string, collectionname string) (collection Collection, err error)
 
 	//Pager interface exposes mongodb-specific query parameters: Selector, Scope, Limit, and Offset
-	Pager interface {
+	Params interface {
 		Selector() bson.M
 		Scope() bson.M
 		Limit() int

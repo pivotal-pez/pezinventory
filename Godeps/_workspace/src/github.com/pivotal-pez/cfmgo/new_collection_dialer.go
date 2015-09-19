@@ -1,4 +1,4 @@
-package integrations
+package cfmgo
 
 import (
 	"gopkg.in/mgo.v2"
@@ -21,7 +21,7 @@ func NewCollectionDialer(url string, dbname string, collectionname string) (coll
 }
 
 //Find -- finds all records matching given selector
-func (s *CollectionRepo) Find(params Pager, result interface{}) (count int, err error) {
+func (s *CollectionRepo) Find(params Params, result interface{}) (count int, err error) {
 	count, err = s.Col.Find(params.Selector()).Count()
 	if err != nil {
 		return

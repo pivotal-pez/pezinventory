@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dnem/paged"
 	"github.com/gorilla/mux"
-	"github.com/pivotal-pez/pezinventory/service/integrations"
-
+	"github.com/pivotal-pez/cfmgo"
+	"github.com/pivotal-pez/cfmgo/params"
+	"github.com/pivotal-pez/cfmgo/wrapper"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -40,39 +40,39 @@ type RedactedLease struct {
 
 //FindLeasesHandler will return a collection of redacted lease records constrained
 //by optional request parameters:
-func FindLeasesHandler(collection integrations.Collection) http.HandlerFunc {
+func FindLeasesHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		params := paged.ExtractRequestParams(req.URL.Query())
+		params := params.ExtractRequestParams(req.URL.Query())
 
 		leases := make([]RedactedLease, 0)
 
 		if count, err := collection.Find(params, &leases); err == nil {
-			Formatter().JSON(w, http.StatusOK, paged.CollectionWrapper(&leases, count))
+			Formatter().JSON(w, http.StatusOK, wrapper.CollectionWrapper(&leases, count))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
 		}
 	}
 }
 
 //FindLeaseByIDHandler will return a redacted lease record for the given ID.
-func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
+func FindLeaseByIDHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
 		id := mux.Vars(req)["id"]
 		if id == "" {
-			Formatter().JSON(w, http.StatusBadRequest, paged.ErrorWrapper("lease id must be specified"))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper("lease id must be specified"))
 			return
 		}
 
 		lease := new(RedactedLease)
 		if err := collection.FindOne(id, lease); err == nil {
-			Formatter().JSON(w, http.StatusOK, paged.SuccessWrapper(lease))
+			Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(lease))
 		} else {
 			log.Println("lease lookup failed")
-			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
 		}
 	}
 }
@@ -85,19 +85,19 @@ func FindLeaseByIDHandler(collection integrations.Collection) http.HandlerFunc {
 //will default to 14.
 //
 //NOTE: The call to dispenser is not yet implemented.
-func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Collection) http.HandlerFunc {
+func LeaseInventoryItemHandler(ic cfmgo.Collection, lc cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var obj Lease
 		decoder := json.NewDecoder(req.Body)
 
 		err := decoder.Decode(&obj)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper(err.Error()))
 			return
 		}
 
 		if obj.InventoryItemID == "" {
-			Formatter().JSON(w, http.StatusBadRequest, paged.ErrorWrapper("inventory_item_id must be specified"))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper("inventory_item_id must be specified"))
 			return
 		}
 
@@ -112,7 +112,7 @@ func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Colle
 
 		err = InventoryItemReservingStatus(obj.InventoryItemID, ic)
 		if err != nil {
-			Formatter().JSON(w, http.StatusNotFound, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
 			return
 		}
 
@@ -124,16 +124,16 @@ func LeaseInventoryItemHandler(ic integrations.Collection, lc integrations.Colle
 			if e != nil {
 				log.Printf("Could not release Inventory Item %s", obj.InventoryItemID.Hex())
 			}
-			Formatter().JSON(w, http.StatusInternalServerError, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
 			return
 		}
 
 		err = InventoryItemLeasedStatus(obj.InventoryItemID, obj.ID, ic)
 		if err != nil {
-			Formatter().JSON(w, http.StatusInternalServerError, paged.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
 			return
 		}
 
-		Formatter().JSON(w, http.StatusOK, paged.SuccessWrapper(obj))
+		Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(obj))
 	}
 }

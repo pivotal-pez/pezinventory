@@ -1,16 +1,12 @@
 package pezinventory
 
 import (
-	"fmt"
 	"os"
-
-	"gopkg.in/mgo.v2"
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
-	"github.com/pivotal-pez/pezinventory/service/integrations"
-
+	"github.com/pivotal-pez/cfmgo"
 	"github.com/unrolled/render"
 )
 
@@ -32,9 +28,9 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
-	inventoryServiceURI := getServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
-	inventoryCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
-	leaseCollection := SetupDB(integrations.NewCollectionDialer, inventoryServiceURI, LeaseCollectionName)
+	inventoryServiceURI := cfmgo.GetServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
+	inventoryCollection := cfmgo.SetupDB(cfmgo.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
+	leaseCollection := cfmgo.SetupDB(cfmgo.NewCollectionDialer, inventoryServiceURI, LeaseCollectionName)
 
 	n := negroni.Classic()
 	mx := mux.NewRouter()
@@ -48,35 +44,4 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	n.UseHandler(mx)
 
 	return n
-}
-
-func getServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.App) (serviceURI string) {
-
-	if service, err := appEnv.Services.WithName(serviceName); err == nil {
-		if serviceURI = service.Credentials[serviceURIName].(string); serviceURI == "" {
-			panic(fmt.Sprintf("we pulled an empty connection string %s from %v - %v", serviceURI, service, service.Credentials))
-		}
-
-	} else {
-		panic(fmt.Sprint("Experienced an error trying to grab service binding information:", err.Error()))
-	}
-	return
-}
-
-//SetupDB connects to the specified database and returns an integrations.Collection
-//object for the specified collection.
-func SetupDB(dialer integrations.CollectionDialer, URI string, collectionName string) (collection integrations.Collection) {
-	var (
-		err      error
-		dialInfo *mgo.DialInfo
-	)
-
-	if dialInfo, err = mgo.ParseURL(URI); err != nil || dialInfo.Database == "" {
-		panic(fmt.Sprintf("can not parse given URI %s due to error: %s", URI, err.Error()))
-	}
-
-	if collection, err = dialer(URI, dialInfo.Database, collectionName); err != nil {
-		panic(fmt.Sprintf("can not dial connection due to error: %s URI:%s col:%s db:%s", err.Error(), URI, collectionName, dialInfo.Database))
-	}
-	return
 }

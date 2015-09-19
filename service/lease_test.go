@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/pivotal-pez/cfmgo"
 	. "github.com/pivotal-pez/pezinventory/service"
 	"github.com/pivotal-pez/pezinventory/service/fakes"
 	"gopkg.in/mgo.v2/bson"
@@ -46,7 +47,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 			},
 		}
-		leaseCollection = SetupDB(
+		leaseCollection = cfmgo.SetupDB(
 			fakes.FakeNewCollectionDialer(fakeLeaseCollection),
 			fakeURI,
 			LeaseCollectionName)

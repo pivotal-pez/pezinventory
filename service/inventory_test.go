@@ -12,6 +12,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/pivotal-pez/cfmgo"
 	. "github.com/pivotal-pez/pezinventory/service"
 	"github.com/pivotal-pez/pezinventory/service/fakes"
 )
@@ -40,7 +41,7 @@ var _ = Describe("ListInventoryItemsHandler", func() {
 					PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 				},
 			}
-			inventoryCollection = SetupDB(
+			inventoryCollection = cfmgo.SetupDB(
 				fakes.FakeNewCollectionDialer(fakeInventory),
 				fakeURI,
 				InventoryCollectionName)
@@ -83,7 +84,7 @@ var _ = Describe("InsertInventoryItemHandler", func() {
 			Status:            "available",
 			PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 		}
-		inventoryCollection = SetupDB(
+		inventoryCollection = cfmgo.SetupDB(
 			fakes.FakeNewCollectionDialer(fakeInventory),
 			fakeURI,
 			InventoryCollectionName)
