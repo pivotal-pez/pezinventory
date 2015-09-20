@@ -47,7 +47,7 @@ var _ = Describe("FindLeaseByIDHandler", func() {
 				PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 			},
 		}
-		leaseCollection = cfmgo.SetupDB(
+		leaseCollection = cfmgo.Connect(
 			fakes.FakeNewCollectionDialer(fakeLeaseCollection),
 			fakeURI,
 			LeaseCollectionName)

@@ -21,8 +21,8 @@ func GetServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.
 	return
 }
 
-//SetupDB connects to the specified database and returns a Collection object for the specified collection.
-func SetupDB(dialer CollectionDialer, URI string, collectionName string) (collection Collection) {
+//Connect to the specified database and return a Collection object for the specified collection.
+func Connect(dialer CollectionDialer, URI string, collectionName string) (collection Collection) {
 	var (
 		err      error
 		dialInfo *mgo.DialInfo

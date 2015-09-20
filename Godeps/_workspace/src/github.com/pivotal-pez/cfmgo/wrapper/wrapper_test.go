@@ -16,11 +16,11 @@ import (
 )
 
 var _ = Describe("ResponseWrapper", func() {
-	Context("when the message is wrapped in ErrorWrapper", func() {
+	Context("when the message is wrapped in Error", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 			err := errors.New("must feed a hamburger to the gnome before continuing")
-			Formatter().JSON(w, http.StatusOK, ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusOK, Error(err.Error()))
 			return
 		}).Methods("GET")
 		server := httptest.NewServer(mx)
@@ -50,11 +50,11 @@ var _ = Describe("ResponseWrapper", func() {
 		})
 	})
 
-	Context("when the is wrapped with SuccessWrapper", func() {
+	Context("when the is wrapped with One", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-			params := ExtractRequestParams(req.URL.Query())
-			Formatter().JSON(w, http.StatusOK, SuccessWrapper(&params))
+			params := Extract(req.URL.Query())
+			Formatter().JSON(w, http.StatusOK, One(&params))
 			return
 		}).Methods("GET")
 		server := httptest.NewServer(mx)
@@ -86,12 +86,12 @@ var _ = Describe("ResponseWrapper", func() {
 		})
 	})
 
-	Context("when the is wrapped with CollectionWrapper", func() {
+	Context("when the is wrapped with Collection", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-			params := ExtractRequestParams(req.URL.Query())
+			params := Extract(req.URL.Query())
 			count := 67
-			Formatter().JSON(w, http.StatusOK, CollectionWrapper(params, count))
+			Formatter().JSON(w, http.StatusOK, Collection(params, count))
 			return
 		}).Methods("GET")
 		server := httptest.NewServer(mx)

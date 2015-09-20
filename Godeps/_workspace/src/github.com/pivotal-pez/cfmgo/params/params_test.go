@@ -18,7 +18,7 @@ var _ = Describe("ExtractQueryParams", func() {
 	Context("when the handler is called with no query params", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-			params := ExtractRequestParams(req.URL.Query())
+			params := Extract(req.URL.Query())
 			Formatter().JSON(w, http.StatusOK, &params)
 			return
 		}).Methods("GET")
@@ -62,8 +62,7 @@ var _ = Describe("ExtractQueryParams", func() {
 			// log.Printf("Path: %+v", req.URL.Path)
 			// log.Printf("RawQuery: %+v", req.URL.RawQuery)
 			// log.Printf("Values: %+v", req.URL.Query())
-
-			params := ExtractRequestParams(req.URL.Query())
+			params := Extract(req.URL.Query())
 			Formatter().JSON(w, http.StatusOK, &params)
 			return
 		}).Methods("GET")

@@ -27,8 +27,8 @@ type RequestParams struct {
 	F int `json:"offset"`
 }
 
-//ExtractRequestParams initializes the RequestParams object.
-func ExtractRequestParams(query url.Values) (p *RequestParams) {
+//Extract initializes the RequestParams object.
+func Extract(query url.Values) (p *RequestParams) {
 	p = newRequestParams(query)
 	p.parseSelector()
 	p.parseLimit()

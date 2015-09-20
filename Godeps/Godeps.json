@@ -43,7 +43,7 @@
 		},
 		{
 			"ImportPath": "github.com/pivotal-pez/cfmgo",
-			"Rev": "1efcdc5b769c658bd206b10dd1d1f2fd1da94919"
+			"Rev": "1ccd5d6cae706fb80fdba009be66ee6aaceb6b8e"
 		},
 		{
 			"ImportPath": "github.com/unrolled/render",

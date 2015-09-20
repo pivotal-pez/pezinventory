@@ -26,7 +26,7 @@ type (
 	//CollectionDialer - a funciton type to dial for collections
 	CollectionDialer func(url string, dbname string, collectionname string) (collection Collection, err error)
 
-	//Pager interface exposes mongodb-specific query parameters: Selector, Scope, Limit, and Offset
+	//Params interface exposes mongodb-specific query parameters: Selector, Scope, Limit, and Offset
 	Params interface {
 		Selector() bson.M
 		Scope() bson.M

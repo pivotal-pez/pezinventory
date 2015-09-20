@@ -29,8 +29,8 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
 	inventoryServiceURI := cfmgo.GetServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
-	inventoryCollection := cfmgo.SetupDB(cfmgo.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
-	leaseCollection := cfmgo.SetupDB(cfmgo.NewCollectionDialer, inventoryServiceURI, LeaseCollectionName)
+	inventoryCollection := cfmgo.Connect(cfmgo.NewCollectionDialer, inventoryServiceURI, InventoryCollectionName)
+	leaseCollection := cfmgo.Connect(cfmgo.NewCollectionDialer, inventoryServiceURI, LeaseCollectionName)
 
 	n := negroni.Classic()
 	mx := mux.NewRouter()

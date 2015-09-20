@@ -12,9 +12,8 @@ type ResponseWrapper struct {
 	Count int `json:"count,omitempty"`
 }
 
-//SuccessWrapper is for successful requests that yield a single
-//result value.
-func SuccessWrapper(data interface{}) (rsp *ResponseWrapper) {
+//One is for successful requests that yield a single result value.
+func One(data interface{}) (rsp *ResponseWrapper) {
 	rsp = &ResponseWrapper{
 		Status: successStatus,
 		Data:   data,
@@ -22,9 +21,9 @@ func SuccessWrapper(data interface{}) (rsp *ResponseWrapper) {
 	return
 }
 
-//CollectionWrapper is for successful reuqests that have the potential
+//Collection is for successful reuqests that have the potential
 //to yield multiple results.
-func CollectionWrapper(data interface{}, count int) (rsp *ResponseWrapper) {
+func Collection(data interface{}, count int) (rsp *ResponseWrapper) {
 	rsp = &ResponseWrapper{
 		Status: successStatus,
 		Data:   data,
@@ -33,8 +32,8 @@ func CollectionWrapper(data interface{}, count int) (rsp *ResponseWrapper) {
 	return
 }
 
-//ErrorWrapper is for requests that yield no results due to an error.
-func ErrorWrapper(message string) (rsp *ResponseWrapper) {
+//Error is for requests that yield no results due to an error.
+func Error(message string) (rsp *ResponseWrapper) {
 	rsp = &ResponseWrapper{
 		Status:  errorStatus,
 		Message: message,

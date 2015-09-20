@@ -44,14 +44,14 @@ func FindLeasesHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		params := params.ExtractRequestParams(req.URL.Query())
+		params := params.Extract(req.URL.Query())
 
 		leases := make([]RedactedLease, 0)
 
 		if count, err := collection.Find(params, &leases); err == nil {
-			Formatter().JSON(w, http.StatusOK, wrapper.CollectionWrapper(&leases, count))
+			Formatter().JSON(w, http.StatusOK, wrapper.Collection(&leases, count))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.Error(err.Error()))
 		}
 	}
 }
@@ -63,16 +63,16 @@ func FindLeaseByIDHandler(collection cfmgo.Collection) http.HandlerFunc {
 
 		id := mux.Vars(req)["id"]
 		if id == "" {
-			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper("lease id must be specified"))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.Error("lease id must be specified"))
 			return
 		}
 
 		lease := new(RedactedLease)
 		if err := collection.FindOne(id, lease); err == nil {
-			Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(lease))
+			Formatter().JSON(w, http.StatusOK, wrapper.One(lease))
 		} else {
 			log.Println("lease lookup failed")
-			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.Error(err.Error()))
 		}
 	}
 }
@@ -92,12 +92,12 @@ func LeaseInventoryItemHandler(ic cfmgo.Collection, lc cfmgo.Collection) http.Ha
 
 		err := decoder.Decode(&obj)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.Error(err.Error()))
 			return
 		}
 
 		if obj.InventoryItemID == "" {
-			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper("inventory_item_id must be specified"))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.Error("inventory_item_id must be specified"))
 			return
 		}
 
@@ -112,7 +112,7 @@ func LeaseInventoryItemHandler(ic cfmgo.Collection, lc cfmgo.Collection) http.Ha
 
 		err = InventoryItemReservingStatus(obj.InventoryItemID, ic)
 		if err != nil {
-			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.Error(err.Error()))
 			return
 		}
 
@@ -124,16 +124,16 @@ func LeaseInventoryItemHandler(ic cfmgo.Collection, lc cfmgo.Collection) http.Ha
 			if e != nil {
 				log.Printf("Could not release Inventory Item %s", obj.InventoryItemID.Hex())
 			}
-			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.Error(err.Error()))
 			return
 		}
 
 		err = InventoryItemLeasedStatus(obj.InventoryItemID, obj.ID, ic)
 		if err != nil {
-			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.Error(err.Error()))
 			return
 		}
 
-		Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(obj))
+		Formatter().JSON(w, http.StatusOK, wrapper.One(obj))
 	}
 }

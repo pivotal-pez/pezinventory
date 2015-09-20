@@ -41,14 +41,14 @@ func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
 
-		params := params.ExtractRequestParams(req.URL.Query())
+		params := params.Extract(req.URL.Query())
 
 		items := make([]RedactedInventoryItem, 0)
 
 		if count, err := collection.Find(params, &items); err == nil {
-			Formatter().JSON(w, http.StatusOK, wrapper.CollectionWrapper(&items, count))
+			Formatter().JSON(w, http.StatusOK, wrapper.Collection(&items, count))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrapper.Error(err.Error()))
 		}
 	}
 }
@@ -62,7 +62,7 @@ func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 
 		err := decoder.Decode(&i)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, wrapper.Error(err.Error()))
 			return
 		}
 
@@ -74,9 +74,9 @@ func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 		info, err := collection.UpsertID(i.ID, i)
 		if err != nil {
 			log.Println("could not create InventoryItem record")
-			Formatter().JSON(w, http.StatusInternalServerError, wrapper.ErrorWrapper(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrapper.Error(err.Error()))
 		} else {
-			Formatter().JSON(w, http.StatusOK, wrapper.SuccessWrapper(info))
+			Formatter().JSON(w, http.StatusOK, wrapper.One(info))
 		}
 	}
 }

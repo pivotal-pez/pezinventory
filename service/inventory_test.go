@@ -41,7 +41,7 @@ var _ = Describe("ListInventoryItemsHandler", func() {
 					PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 				},
 			}
-			inventoryCollection = cfmgo.SetupDB(
+			inventoryCollection = cfmgo.Connect(
 				fakes.FakeNewCollectionDialer(fakeInventory),
 				fakeURI,
 				InventoryCollectionName)
@@ -84,7 +84,7 @@ var _ = Describe("InsertInventoryItemHandler", func() {
 			Status:            "available",
 			PrivateAttributes: map[string]interface{}{"secret": "stuff"},
 		}
-		inventoryCollection = cfmgo.SetupDB(
+		inventoryCollection = cfmgo.Connect(
 			fakes.FakeNewCollectionDialer(fakeInventory),
 			fakeURI,
 			InventoryCollectionName)
