@@ -1,0 +1,1 @@
+swagger -apiPackage="github.com/pivotal-pez/pezinventory" -mainApiFile="github.com/pivotal-pez/pezinventory/main.go" -basePath="https://inventorydev.cfapps.core.pez.pivotal.io:443"

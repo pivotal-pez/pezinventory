@@ -1,3 +1,8 @@
+// @APIVersion 1.0.0
+// @APITitle Pez Inventory
+// @APIDescription Inventory capability for Pez
+// @SubApi Inventory [/v1/inventory]
+// @SubApi Lease [/v1/leases]
 package main
 
 import (

@@ -46,6 +46,10 @@
 			"Rev": "1ccd5d6cae706fb80fdba009be66ee6aaceb6b8e"
 		},
 		{
+			"ImportPath": "github.com/rs/cors",
+			"Rev": "eb527c8097e0f19a3ff7b253a3fe70545070f420"
+		},
+		{
 			"ImportPath": "github.com/unrolled/render",
 			"Rev": "c442bc30e10d9a5ad49f2837d5e175de0bd0a52a"
 		},

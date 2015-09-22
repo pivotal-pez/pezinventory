@@ -36,7 +36,17 @@ type RedactedInventoryItem struct {
 	LeaseID      bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id,omitempty"`
 }
 
-//ListInventoryItemsHandler -
+// @Title ListInventoryItems
+// @Description Returns a collection of inventory items based on the supplied parameters
+// @Accept json
+// @Param  limit    query   string   false   "Maximum number of records in result set"
+// @Param  offset   query   string   false   "Number of records to skip; supports paging"
+// @Param  scope    query   string   false   "Comma-separated list of fields to return"
+// @Success 200 {object} wrapper.ResponseWrapper
+// @Failure 404 {object} wrapper.ResponseWrapper
+// @Resource /v1/inventory
+// @Router /v1/inventory [get]
+//ListInventoryItemsHandler returns a collection of InventoryItems based on supplied paramaters.
 func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		collection.Wake()
@@ -53,8 +63,16 @@ func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	}
 }
 
-//InsertInventoryItemHandler -
-//FIXME(dnem) consider returning ID rather than mgo.ChangeInfo
+// @Title Insert / Update Inventory Item
+// @Description Uses MongoDB UPSERT to add new records, or update existing records, to the InventoryItems collection.
+// @Accept json
+// @Param  body body string true "JSON string of InventoryItem Record"
+// @Success 200 {object} wrapper.ResponseWrapper
+// @Failure 500 {object} wrapper.ResponseWrapper
+// @Resource /v1/inventory
+// @Router /v1/inventory [post]
+//InsertInventoryItemHandler uses MongoDB UPSERT to add new records, or update existing records,
+//to the InventoryItems collection.
 func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var i InventoryItem
