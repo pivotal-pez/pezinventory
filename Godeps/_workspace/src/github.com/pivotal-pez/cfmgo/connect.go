@@ -1,3 +1,4 @@
+// A MongoDB integration package for Cloud Foundry.
 package cfmgo
 
 import (
@@ -7,7 +8,7 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-//GetServiceBinding parses cfenv.App object and returns a URI for the specified service.
+//GetServiceBinding parses a *cfenv.App object and returns a URI for the specified service.  (Refer to http://github.com/cloudfountry-community/go-cfenv for more details.)
 func GetServiceBinding(serviceName string, serviceURIName string, appEnv *cfenv.App) (serviceURI string) {
 
 	if service, err := appEnv.Services.WithName(serviceName); err == nil {

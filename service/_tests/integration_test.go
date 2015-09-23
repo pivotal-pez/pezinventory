@@ -15,7 +15,7 @@ import (
 	"github.com/codegangsta/negroni"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-pez/cfmgo/wrapper"
+	"github.com/pivotal-pez/cfmgo/wrap"
 	. "github.com/pivotal-pez/pezinventory/service"
 )
 
@@ -151,7 +151,7 @@ var _ = Describe("Server Integration Tests", func() {
 		})
 
 		It("POST /v1/leases returns a status code of 200 and the new lease record", func() {
-			var rm wrapper.ResponseWrapper
+			var rm wrap.ResponseWrapper
 			var newLease RedactedLease
 			server.ServeHTTP(recorder, request)
 			Expect(recorder.Code).To(Equal(200))

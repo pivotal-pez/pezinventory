@@ -1,4 +1,5 @@
-package wrapper
+//Wrap is a simple helper to wrap API response data and errors in a consistent structure.
+package wrap
 
 //ResponseWrapper provides a standard structure for API responses.
 type ResponseWrapper struct {
@@ -23,7 +24,7 @@ func One(data interface{}) (rsp *ResponseWrapper) {
 
 //Collection is for successful reuqests that have the potential
 //to yield multiple results.
-func Collection(data interface{}, count int) (rsp *ResponseWrapper) {
+func Many(data interface{}, count int) (rsp *ResponseWrapper) {
 	rsp = &ResponseWrapper{
 		Status: successStatus,
 		Data:   data,

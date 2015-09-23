@@ -1,3 +1,4 @@
+// Params will extract query parameters from the query string of a request into a RequestParams object.  RequestParams satisfies the cfmgo.Params interface used by the cfmgo.Collection.Find() method.
 package params
 
 import (
@@ -8,7 +9,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//RequestParams holds state parsed from a given HTTP request
+// RequestParams holds state parsed from a given HTTP request. It provides methods that yield components of a MongoDB query and satisfy the cfmgo.Params interface:
 type RequestParams struct {
 	//RawQuery contains the raw query string Values object
 	RawQuery url.Values `json:"raw_query"`
@@ -27,7 +28,16 @@ type RequestParams struct {
 	F int `json:"offset"`
 }
 
-//Extract initializes the RequestParams object.
+// Extract initializes the RequestParams object. It will interrogate the `url.Values` object of an HTTP request and scan for the following:
+//
+//  scope
+// Scope is used to build a properly formatted bson.M object off of a provided set of comma-delimited fields to be used as the Select() argument in a MongoDB query.  If not provided, an empty bson.M object will be provided which results in all fields being returned in the result set.
+//  limit
+// The limit value is converted to an integer; if not provided, it will default to 10.
+//  offset
+// The offset value is converted to an integer; if not provided, it will default to 0.
+//
+// All other parameters are assumed to represent the selector and will be converted into a bson.M object. if not provided, an empty bson.M object will be provided which results in all records being returned in the result set.
 func Extract(query url.Values) (p *RequestParams) {
 	p = newRequestParams(query)
 	p.parseSelector()
@@ -47,7 +57,8 @@ func newRequestParams(raw url.Values) (p *RequestParams) {
 }
 
 //Selector returns a mongodb bson.M object containing the query parameters
-//supplied in the HTTP request.
+//supplied in the HTTP request and is used to filter the records returned
+//by a query.
 func (p *RequestParams) Selector() bson.M {
 	return p.Q
 }
@@ -59,8 +70,8 @@ func (p *RequestParams) Scope() bson.M {
 	return p.S
 }
 
-//Limit returns an integer value indicating the size of the result set
-//returned from the database.
+//Limit returns an integer value indicating the number of records to return
+//return in a result set.
 func (p *RequestParams) Limit() int {
 	return p.L
 }

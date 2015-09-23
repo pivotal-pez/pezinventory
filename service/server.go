@@ -7,7 +7,6 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/pivotal-pez/cfmgo"
-	"github.com/rs/cors"
 	"github.com/unrolled/render"
 )
 
@@ -26,9 +25,6 @@ func Formatter() *render.Render {
 
 //NewServer configures and returns a Server.
 func NewServer(appEnv *cfenv.App) *negroni.Negroni {
-
-	c := cors.New(cors.Options{})
-
 	inventoryServiceName := os.Getenv("INVENTORY_DB_NAME")
 	inventoryServiceURIName := os.Getenv("INVENTORY_DB_URI")
 	inventoryServiceURI := cfmgo.GetServiceBinding(inventoryServiceName, inventoryServiceURIName, appEnv)
@@ -44,8 +40,6 @@ func NewServer(appEnv *cfenv.App) *negroni.Negroni {
 	mx.HandleFunc("/v1/leases", FindLeasesHandler(leaseCollection)).Methods("GET")
 	mx.HandleFunc("/v1/leases", LeaseInventoryItemHandler(inventoryCollection, leaseCollection)).Methods("POST")
 
-	n.Use(c)
 	n.UseHandler(mx)
-
 	return n
 }

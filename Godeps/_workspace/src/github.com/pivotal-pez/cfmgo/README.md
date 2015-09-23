@@ -19,19 +19,7 @@ collection := cfmgo.Connect(cfmgo.NewCollectionDialer, serviceURI, "my-collectio
 
 ### cfmgo/params
 
-`params` will extract query parameters from the query string of a request into a `RequestParams` object.  RequestParams satisfies the `Params` interface defined in the `cfmgo` base package and used by the `cfmgo.Collection.Find()` method.
-
-`RequestParams` object provides 4 methods to yield components of a MongoDB query and satisfy the `cfmgo.Params` interface:
-1. **Selector()** returns a bson.M object that is used to filter the records returned by a query
-1. **Scope()** returns a bson.M object that is use to filter the fields returned by a query
-1. **Limit()** returns an integer that constrains the number of records returned in a result set
-1. **Offset()** returns an integer that is used to skip over a number of matching records; used for paging
-
-`params.Extract()` will interrogate the `url.Values` object of an HTTP request and scan for the following:
-* `scope` -- will build a properly formatted bson.M object off of a provided set of comma-delimited fields to be used as the Select() argument in a MongoDB query.  If not provided, an empty bson.M object will be provided, which results in all fields being returned in the result set.
-* `limit` -- will convert the value to an integer; if not provided, it will default to 10.  
-* `offset` -- will convert the value to an integer; if not provided, it will default to 0.
-* all other `name=value` pairs are assumed to represent the query selector and will be converted into a bson.M object and passed as the argument to Find()
+`params` is a package that extracts query parameters from a request to be used in cfmgo.Collection.Find() operations.
 
 #### Example
 ```go
@@ -51,7 +39,6 @@ func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	}
 }
 ```
-
 
 ### cfmgo/wrapper
 

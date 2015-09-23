@@ -7,7 +7,7 @@ import (
 
 	"github.com/pivotal-pez/cfmgo"
 	"github.com/pivotal-pez/cfmgo/params"
-	"github.com/pivotal-pez/cfmgo/wrapper"
+	"github.com/pivotal-pez/cfmgo/wrap"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -36,16 +36,6 @@ type RedactedInventoryItem struct {
 	LeaseID      bson.ObjectId          `bson:"lease_id,omitempty" json:"lease_id,omitempty"`
 }
 
-// @Title ListInventoryItems
-// @Description Returns a collection of inventory items based on the supplied parameters
-// @Accept json
-// @Param  limit    query   string   false   "Maximum number of records in result set"
-// @Param  offset   query   string   false   "Number of records to skip; supports paging"
-// @Param  scope    query   string   false   "Comma-separated list of fields to return"
-// @Success 200 {object} wrapper.ResponseWrapper
-// @Failure 404 {object} wrapper.ResponseWrapper
-// @Resource /v1/inventory
-// @Router /v1/inventory [get]
 //ListInventoryItemsHandler returns a collection of InventoryItems based on supplied paramaters.
 func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -56,21 +46,13 @@ func ListInventoryItemsHandler(collection cfmgo.Collection) http.HandlerFunc {
 		items := make([]RedactedInventoryItem, 0)
 
 		if count, err := collection.Find(params, &items); err == nil {
-			Formatter().JSON(w, http.StatusOK, wrapper.Collection(&items, count))
+			Formatter().JSON(w, http.StatusOK, wrap.Many(&items, count))
 		} else {
-			Formatter().JSON(w, http.StatusNotFound, wrapper.Error(err.Error()))
+			Formatter().JSON(w, http.StatusNotFound, wrap.Error(err.Error()))
 		}
 	}
 }
 
-// @Title Insert / Update Inventory Item
-// @Description Uses MongoDB UPSERT to add new records, or update existing records, to the InventoryItems collection.
-// @Accept json
-// @Param  body body string true "JSON string of InventoryItem Record"
-// @Success 200 {object} wrapper.ResponseWrapper
-// @Failure 500 {object} wrapper.ResponseWrapper
-// @Resource /v1/inventory
-// @Router /v1/inventory [post]
 //InsertInventoryItemHandler uses MongoDB UPSERT to add new records, or update existing records,
 //to the InventoryItems collection.
 func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
@@ -80,7 +62,7 @@ func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 
 		err := decoder.Decode(&i)
 		if err != nil {
-			Formatter().JSON(w, http.StatusBadRequest, wrapper.Error(err.Error()))
+			Formatter().JSON(w, http.StatusBadRequest, wrap.Error(err.Error()))
 			return
 		}
 
@@ -92,9 +74,9 @@ func InsertInventoryItemHandler(collection cfmgo.Collection) http.HandlerFunc {
 		info, err := collection.UpsertID(i.ID, i)
 		if err != nil {
 			log.Println("could not create InventoryItem record")
-			Formatter().JSON(w, http.StatusInternalServerError, wrapper.Error(err.Error()))
+			Formatter().JSON(w, http.StatusInternalServerError, wrap.Error(err.Error()))
 		} else {
-			Formatter().JSON(w, http.StatusOK, wrapper.One(info))
+			Formatter().JSON(w, http.StatusOK, wrap.One(info))
 		}
 	}
 }

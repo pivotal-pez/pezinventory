@@ -1,4 +1,4 @@
-package wrapper_test
+package wrap_test
 
 import (
 	. "github.com/onsi/ginkgo"

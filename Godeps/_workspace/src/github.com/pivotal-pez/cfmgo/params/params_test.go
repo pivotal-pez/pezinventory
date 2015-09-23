@@ -57,11 +57,6 @@ var _ = Describe("ExtractQueryParams", func() {
 	Context("when the handler is called with parameters", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-			// log.Printf("Scheme: %+v", req.URL.Scheme)
-			// log.Printf("Host: %+v", req.URL.Host)
-			// log.Printf("Path: %+v", req.URL.Path)
-			// log.Printf("RawQuery: %+v", req.URL.RawQuery)
-			// log.Printf("Values: %+v", req.URL.Query())
 			params := Extract(req.URL.Query())
 			Formatter().JSON(w, http.StatusOK, &params)
 			return

@@ -1,4 +1,4 @@
-package wrapper_test
+package wrap_test
 
 import (
 	"encoding/json"
@@ -12,11 +12,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/pivotal-pez/cfmgo/params"
-	. "github.com/pivotal-pez/cfmgo/wrapper"
+	. "github.com/pivotal-pez/cfmgo/wrap"
 )
 
 var _ = Describe("ResponseWrapper", func() {
-	Context("when the message is wrapped in Error", func() {
+	Context("when the message is wrapped with Error()", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 			err := errors.New("must feed a hamburger to the gnome before continuing")
@@ -50,7 +50,7 @@ var _ = Describe("ResponseWrapper", func() {
 		})
 	})
 
-	Context("when the is wrapped with One", func() {
+	Context("when the message is wrapped with One()", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 			params := Extract(req.URL.Query())
@@ -86,12 +86,12 @@ var _ = Describe("ResponseWrapper", func() {
 		})
 	})
 
-	Context("when the is wrapped with Collection", func() {
+	Context("when the message is wrapped with Collection()", func() {
 		mx := mux.NewRouter()
 		mx.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 			params := Extract(req.URL.Query())
 			count := 67
-			Formatter().JSON(w, http.StatusOK, Collection(params, count))
+			Formatter().JSON(w, http.StatusOK, Many(params, count))
 			return
 		}).Methods("GET")
 		server := httptest.NewServer(mx)
