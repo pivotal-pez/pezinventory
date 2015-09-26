@@ -106,8 +106,8 @@ func LeaseInventoryItemHandler(ic cfmgo.Collection, lc cfmgo.Collection) http.Ha
 				obj.DurationDays = 14
 			}
 			epoch := time.Now()
-			obj.StartDate = epoch.String()
-			obj.EndDate = epoch.AddDate(0, 0, obj.DurationDays).String()
+			obj.StartDate = epoch.UTC().String()
+			obj.EndDate = epoch.AddDate(0, 0, obj.DurationDays).UTC().String()
 		}
 
 		err = InventoryItemReservingStatus(obj.InventoryItemID, ic)
